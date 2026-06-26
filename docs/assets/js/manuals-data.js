@@ -1,4 +1,4 @@
-/* 由 admin.html 產生，更新日期：2026/6/27 上午7:29:31 */
+/* 由 admin.html 產生，更新日期：2026/6/27 上午7:42:45 */
 window.SITE_CONFIG = {
   "siteName": "SR+SMC+VWAP 多空雙向教練 v6.6.9",
   "subtitle": "Pine Script Coaching • Strategy • Execution",
@@ -32,7 +32,7 @@ window.SITE_CONFIG = {
       "id": "ko-fi",
       "label": "打賞／patreon訂閱贊助 (IOS/Android) 也可訂閱",
       "icon": "☕",
-      "url": "https://www.patreon.com/16307160/join",
+      "url": "https://www.patreon.com/cw/hongshihong19_SMC",
       "enabled": true
     }
   ],
@@ -173,7 +173,7 @@ window.ARTICLES = [
     "titleEn": "",
     "summary": "",
     "summaryEn": "",
-    "content": "\n<blockquote class=\"text-post-media\" data-text-post-permalink=\"https://www.threads.com/@hongshihong19/post/DaDxXI1n8oA?xmt=AQG0KHS54y7s7LfpEFDCtymBrbomEsDnkxzAa8JrNOkE7g\" data-text-post-version=\"0\" id=\"sr-thread-DaDxXI1n8oA-1782512710837\" style=\"background:#fff;border:1px solid #00000026;border-radius:16px;max-width:650px;margin:1px auto;min-width:270px;padding:0;width:calc(100% - 2px)\"><a href=\"https://www.threads.com/@hongshihong19/post/DaDxXI1n8oA?xmt=AQG0KHS54y7s7LfpEFDCtymBrbomEsDnkxzAa8JrNOkE7g\" style=\"background:#fff;display:block;padding:36px 24px;text-align:center;text-decoration:none;color:#111;font:600 15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\" target=\"_blank\" rel=\"noopener noreferrer\"><div style=\"font-size:32px;line-height:1;margin-bottom:12px\">◎</div><div>在 Threads 查看</div></a></blockquote>\n",
+    "content": "\n<blockquote class=\"text-post-media\" data-text-post-permalink=\"https://www.threads.com/@hongshihong19/post/DaDxXI1n8oA?xmt=AQG0KHS54y7s7LfpEFDCtymBrbomEsDnkxzAa8JrNOkE7g\" data-text-post-version=\"0\" id=\"sr-thread-DaDxXI1n8oA-1782512710837\" style=\"background:#fff;border:1px solid #00000026;border-radius:16px;max-width:650px;margin:1px auto;min-width:270px;padding:0;width:calc(100% - 2px)\"><a href=\"https://www.threads.com/@hongshihong19/post/DaDxXI1n8oA?xmt=AQG0KHS54y7s7LfpEFDCtymBrbomEsDnkxzAa8JrNOkE7g\" style=\"background:#fff;display:block;padding:36px 24px;text-align:center;text-decoration:none;color:#111;font:600 15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\" target=\"_blank\" rel=\"noopener noreferrer\"><div style=\"font-size:32px;line-height:1;margin-bottom:12px\">◎</div><div>在 Threads 查看</div></a></blockquote>\n\n贊助會員\nhttps://www.patreon.com/cw/hongshihong19_SMC?vanity=hongshihong19_SMC",
     "contentEn": "",
     "coverImage": "",
     "coverAlt": "[公告]SR+SMC+VWAP 多空雙向教練 許願成立🎊",
