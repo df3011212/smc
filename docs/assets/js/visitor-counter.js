@@ -27,8 +27,16 @@
   content.className = "global-visitor-counter__content";
 
   counter.append(dot, content);
-  document.body.append(counter);
-  document.documentElement.classList.add("has-global-visitor-counter");
+
+  const footer = document.querySelector(".site-footer");
+  if (footer) {
+    const row = document.createElement("div");
+    row.className = "site-footer__visitor-counter";
+    row.append(counter);
+    footer.append(row);
+  } else {
+    document.body.append(counter);
+  }
 
   if (isLocalPreview) {
     counter.classList.add("is-local-preview");

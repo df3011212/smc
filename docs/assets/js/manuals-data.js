@@ -1,4 +1,4 @@
-/* 由 admin.html 產生，更新日期：2026/6/27 上午6:26:54 */
+/* 由 admin.html 產生，更新日期：2026/6/27 上午7:29:31 */
 window.SITE_CONFIG = {
   "siteName": "SR+SMC+VWAP 多空雙向教練 v6.6.9",
   "subtitle": "Pine Script Coaching • Strategy • Execution",
@@ -30,10 +30,10 @@ window.SITE_CONFIG = {
   "donations": [
     {
       "id": "ko-fi",
-      "label": "打賞／贊助",
+      "label": "打賞／patreon訂閱贊助 (IOS/Android) 也可訂閱",
       "icon": "☕",
-      "url": "https://ko-fi.com/hungshiihhungsmc",
-      "enabled": false
+      "url": "https://www.patreon.com/16307160/join",
+      "enabled": true
     }
   ],
   "downloadCounter": {
@@ -81,7 +81,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 70,
+    "downloadCount": 102,
     "downloadCounterName": "4smc--02-rvol-oi---v2-----mqv5owet"
   },
   {
@@ -106,7 +106,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 69,
+    "downloadCount": 106,
     "downloadCounterName": "sr-smc-v699--k------mqv5ln3u"
   },
   {
@@ -131,7 +131,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 105,
+    "downloadCount": 135,
     "downloadCounterName": "sr-smc-vwap---v669-----mqv5gwu8"
   },
   {
@@ -156,7 +156,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 83,
+    "downloadCount": 110,
     "downloadCounterName": "smc---v669-----mqv4lf4g"
   }
 ];
