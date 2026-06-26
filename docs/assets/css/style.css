@@ -1959,3 +1959,11 @@ code {
     -webkit-backdrop-filter: none;
   }
 }
+
+
+/* ===== v8.1.11 multiple donation buttons ===== */
+.header-donation-buttons{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.header-donation-buttons[hidden]{display:none}
+.donation-header-button{min-height:42px;padding:.62rem .88rem;white-space:nowrap}
+@media (max-width:1060px){.site-header{align-items:flex-start}.header-actions{max-width:58%}.header-donation-buttons{width:100%}}
+@media (max-width:780px){.header-actions{max-width:none;width:100%}.header-donation-buttons{display:grid;grid-template-columns:1fr;width:100%}.header-donation-buttons .button{width:100%}}

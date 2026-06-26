@@ -38,7 +38,8 @@
     heroDotsWrap: document.querySelector("#heroDots"),
     heroDots: Array.from(document.querySelectorAll(".hero-dot")),
     heroPrev: document.querySelector("#heroPrev"),
-    heroNext: document.querySelector("#heroNext")
+    heroNext: document.querySelector("#heroNext"),
+    donationButtons: document.querySelector("#donationButtons")
   };
 
   const state = {
@@ -98,6 +99,38 @@
   const isText = (item) => previewKinds.text.includes(getFileType(item));
   const canInlinePreview = (item) => isPdf(item) || isImage(item) || isHtml(item) || isText(item);
   const getPdfViewerUrl = (item) => `viewer.html?file=${encodeURIComponent(item.file || "")}&title=${encodeURIComponent(item.title || "PDF 預覽")}`;
+
+  const DEFAULT_DONATION_LINKS = [
+    { id: "ko-fi", label: "打賞／贊助", icon: "☕", url: "https://ko-fi.com/hungshiihhungsmc", enabled: true }
+  ];
+
+  const getPublicDonationLinks = () => {
+    const source = Array.isArray(config.donations) ? config.donations : DEFAULT_DONATION_LINKS;
+    return source
+      .map((item, index) => ({
+        id: String(item?.id || `support-${index + 1}`),
+        label: String(item?.label || `打賞平台 ${index + 1}`).trim(),
+        icon: String(item?.icon || "❤").trim().slice(0, 4),
+        url: String(item?.url || "").trim(),
+        enabled: item?.enabled !== false,
+      }))
+      .filter(item => {
+        if (!item.enabled || !item.label || !item.url) return false;
+        try { return ["https:", "http:"].includes(new URL(item.url).protocol); } catch { return false; }
+      })
+      .slice(0, 12);
+  };
+
+  const renderDonationButtons = () => {
+    if (!elements.donationButtons) return;
+    const links = getPublicDonationLinks();
+    elements.donationButtons.hidden = links.length === 0;
+    elements.donationButtons.innerHTML = links.map(item => `
+      <a class="button button-support donation-header-button" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="開啟 ${escapeHtml(item.label)}">
+        <span aria-hidden="true">${escapeHtml(item.icon || "❤")}</span>
+        <span>${escapeHtml(item.label)}</span>
+      </a>`).join("");
+  };
 
   const setSiteConfig = () => {
     const name = config.siteName || "SR+SMC+VWAP 多空雙向教練 v6.6.9";
@@ -885,6 +918,7 @@
   });
 
   setSiteConfig();
+  renderDonationButtons();
   initTheme();
   refreshAll();
   initHeroCarousel();
