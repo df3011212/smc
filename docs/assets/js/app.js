@@ -1,7 +1,18 @@
 (() => {
   "use strict";
 
-  const getManualSource = () => (Array.isArray(window.MANUALS) ? [...window.MANUALS] : []);
+  const isEnglish = (window.SR_SITE_LANGUAGE || document.documentElement.lang || "").toLowerCase().startsWith("en");
+  const tr = (zh, en) => isEnglish ? en : zh;
+  const localizeManual = (item = {}) => isEnglish ? {
+    ...item,
+    title: item.titleEn || item.title,
+    category: item.categoryEn || item.category,
+    description: item.descriptionEn || item.description,
+    license: item.licenseEn || item.license,
+    source: item.sourceEn || item.source,
+    tags: Array.isArray(item.tagsEn) && item.tagsEn.length ? item.tagsEn : item.tags,
+  } : { ...item };
+  const getManualSource = () => (Array.isArray(window.MANUALS) ? window.MANUALS.map(localizeManual) : []);
 
   let manuals = getManualSource();
   const config = window.SITE_CONFIG || {};
@@ -49,7 +60,15 @@
     carouselIndex: 0
   };
 
-  const legalVersion = config.legalVersion || "2026-06-26";
+  const legalVersion = config.legalVersion || "2026-06-27";
+  const counterSettings = {
+    enabled: config.downloadCounter?.enabled !== false,
+    provider: config.downloadCounter?.provider || "counterapi-v1",
+    namespace: String(config.downloadCounter?.namespace || "df3011212-smc-downloads-v669").trim(),
+    showOnCards: config.downloadCounter?.showOnCards !== false,
+  };
+  const localHosts = new Set(["", "localhost", "127.0.0.1", "0.0.0.0", "::1"]);
+  const isLocalPreview = window.location.protocol === "file:" || localHosts.has(window.location.hostname);
   let pendingDownload = null;
   let carouselTimer = null;
   let activePreviewObjectUrl = null;
@@ -69,8 +88,8 @@
 
   const formatDate = (value) => {
     const date = normalizeDate(value);
-    if (!date) return value || "未設定";
-    return new Intl.DateTimeFormat("zh-TW", {
+    if (!date) return value || tr("未設定", "Not set");
+    return new Intl.DateTimeFormat(isEnglish ? "en-US" : "zh-TW", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit"
@@ -98,7 +117,7 @@
   const isHtml = (item) => previewKinds.html.includes(getFileType(item));
   const isText = (item) => previewKinds.text.includes(getFileType(item));
   const canInlinePreview = (item) => isPdf(item) || isImage(item) || isHtml(item) || isText(item);
-  const getPdfViewerUrl = (item) => `viewer.html?file=${encodeURIComponent(item.file || "")}&title=${encodeURIComponent(item.title || "PDF 預覽")}`;
+  const getPdfViewerUrl = (item) => `viewer.html?file=${encodeURIComponent(item.file || "")}&title=${encodeURIComponent(item.title || tr("PDF 預覽", "PDF Preview"))}`;
 
   const DEFAULT_DONATION_LINKS = [
     { id: "ko-fi", label: "打賞／贊助", icon: "☕", url: "https://ko-fi.com/hungshiihhungsmc", enabled: true }
@@ -109,7 +128,7 @@
     return source
       .map((item, index) => ({
         id: String(item?.id || `support-${index + 1}`),
-        label: String(item?.label || `打賞平台 ${index + 1}`).trim(),
+        label: String((isEnglish ? item?.labelEn : item?.label) || item?.label || `打賞平台 ${index + 1}`).trim(),
         icon: String(item?.icon || "❤").trim().slice(0, 4),
         url: String(item?.url || "").trim(),
         enabled: item?.enabled !== false,
@@ -126,21 +145,21 @@
     const links = getPublicDonationLinks();
     elements.donationButtons.hidden = links.length === 0;
     elements.donationButtons.innerHTML = links.map(item => `
-      <a class="button button-support donation-header-button" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="開啟 ${escapeHtml(item.label)}">
+      <a class="button button-support donation-header-button" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(tr("開啟", "Open"))} ${escapeHtml(item.label)}">
         <span aria-hidden="true">${escapeHtml(item.icon || "❤")}</span>
         <span>${escapeHtml(item.label)}</span>
       </a>`).join("");
   };
 
   const setSiteConfig = () => {
-    const name = config.siteName || "SR+SMC+VWAP 多空雙向教練 v6.6.9";
+    const name = isEnglish ? (config.siteNameEn || "SR+SMC+VWAP Long/Short Trading Coach v6.6.9") : (config.siteName || "SR+SMC+VWAP 多空雙向教練 v6.6.9");
     document.title = name;
     if (elements.siteName) elements.siteName.textContent = name;
     if (elements.footerSiteName) elements.footerSiteName.textContent = name;
-    if (elements.siteSubtitle) elements.siteSubtitle.textContent = config.subtitle || "Pine Script Coaching • Strategy • Execution";
+    if (elements.siteSubtitle) elements.siteSubtitle.textContent = isEnglish ? (config.subtitleEn || "Pine Script Coaching • Strategy • Execution") : (config.subtitle || "Pine Script Coaching • Strategy • Execution");
     if (elements.heroTitle) elements.heroTitle.textContent = name;
-    if (elements.heroLead) elements.heroLead.textContent = config.heroLead || "集中整理教材與下載內容。";
-    if (elements.siteNotice) elements.siteNotice.textContent = config.notice || "歡迎使用教練手冊下載中心。";
+    if (elements.heroLead) elements.heroLead.textContent = isEnglish ? (config.heroLeadEn || "A centralized library for PDFs, Pine Script, ZIP packages, and training materials, with clearer versioning, downloads, and search.") : (config.heroLead || "集中整理教材與下載內容。");
+    if (elements.siteNotice) elements.siteNotice.textContent = isEnglish ? (config.noticeEn || "This website is for education and personal research. All content is free and is not investment advice.") : (config.notice || "歡迎使用教練手冊下載中心。");
     if (elements.currentYear) elements.currentYear.textContent = new Date().getFullYear();
   };
 
@@ -160,7 +179,7 @@
     if (elements.categoryCount) elements.categoryCount.textContent = categories.length;
     if (elements.latestDate) {
       elements.latestDate.textContent = dates[0]
-        ? new Intl.DateTimeFormat("zh-TW", { month: "2-digit", day: "2-digit" }).format(dates[0])
+        ? new Intl.DateTimeFormat(isEnglish ? "en-US" : "zh-TW", { month: "2-digit", day: "2-digit" }).format(dates[0])
         : "—";
     }
   };
@@ -172,24 +191,24 @@
     elements.categoryFilters.innerHTML = categories.map(category => {
       const count = category === "全部" ? manuals.length : manuals.filter(item => item.category === category).length;
       const active = state.category === category ? "is-active" : "";
-      return `<button class="filter-chip ${active}" type="button" data-category="${escapeHtml(category)}">${escapeHtml(category)} <span>${count}</span></button>`;
+      return `<button class="filter-chip ${active}" type="button" data-category="${escapeHtml(category)}">${escapeHtml(category === "全部" ? tr("全部", "All") : category)} <span>${count}</span></button>`;
     }).join("");
   };
 
   const getFilteredManuals = () => {
-    const query = state.query.trim().toLocaleLowerCase("zh-Hant");
+    const query = state.query.trim().toLocaleLowerCase(isEnglish ? "en" : "zh-Hant");
     const filtered = manuals.filter(item => {
       const categoryMatches = state.category === "全部" || item.category === state.category;
       const searchText = [item.title, item.category, item.description, item.version, ...(item.tags || [])]
         .filter(Boolean)
         .join(" ")
-        .toLocaleLowerCase("zh-Hant");
+        .toLocaleLowerCase(isEnglish ? "en" : "zh-Hant");
       return categoryMatches && (!query || searchText.includes(query));
     });
 
     return filtered.sort((a, b) => {
       if (state.sort === "updated-asc") return (normalizeDate(a.updated) || 0) - (normalizeDate(b.updated) || 0);
-      if (state.sort === "title-asc") return a.title.localeCompare(b.title, "zh-Hant");
+      if (state.sort === "title-asc") return a.title.localeCompare(b.title, isEnglish ? "en" : "zh-Hant");
       if (state.sort === "featured") {
         return Number(Boolean(b.featured)) - Number(Boolean(a.featured))
           || (normalizeDate(b.updated) || 0) - (normalizeDate(a.updated) || 0);
@@ -198,14 +217,89 @@
     });
   };
 
+  const getCounterName = (item = {}) => String(item.downloadCounterName || item.id || "manual")
+    .trim().toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 90) || "manual";
+
+  const getCounterEndpoint = (item, action = "") => {
+    const namespace = encodeURIComponent(counterSettings.namespace || "df3011212-smc-downloads-v669");
+    const name = encodeURIComponent(getCounterName(item));
+    const suffix = action ? `/${action}` : "";
+    return `https://api.counterapi.dev/v1/${namespace}/${name}${suffix}`;
+  };
+
+  const parseCounterValue = (payload, fallback = 0) => {
+    const candidates = [payload?.value, payload?.count, payload?.data?.value, payload?.data?.count];
+    const value = candidates.map(Number).find(Number.isFinite);
+    return Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : Math.max(0, Math.trunc(Number(fallback) || 0));
+  };
+
+  const updateDownloadCountElements = (manualId, value, stateName = "loaded") => {
+    document.querySelectorAll(`[data-download-count-id="${CSS.escape(String(manualId))}"]`).forEach(element => {
+      element.dataset.state = stateName;
+      element.textContent = new Intl.NumberFormat(isEnglish ? "en-US" : "zh-TW").format(Math.max(0, Number(value) || 0));
+    });
+  };
+
+  const fetchCounter = async (item, action = "") => {
+    const response = await fetch(getCounterEndpoint(item, action), { cache: "no-store", mode: "cors", keepalive: action === "up" });
+    if (!response.ok) throw new Error(`Counter API ${response.status}`);
+    return response.json();
+  };
+
+  const loadDownloadCount = async (item) => {
+    const fallback = Math.max(0, Number(item.downloadCount) || 0);
+    if (!counterSettings.enabled || !counterSettings.namespace || isLocalPreview) {
+      updateDownloadCountElements(item.id, fallback, isLocalPreview ? "local" : "disabled");
+      return fallback;
+    }
+    try {
+      const payload = await fetchCounter(item);
+      const value = parseCounterValue(payload, fallback);
+      updateDownloadCountElements(item.id, value);
+      return value;
+    } catch (error) {
+      console.warn("Download counter unavailable:", error);
+      updateDownloadCountElements(item.id, fallback, "fallback");
+      return fallback;
+    }
+  };
+
+  const loadVisibleDownloadCounts = () => {
+    if (!counterSettings.showOnCards) return;
+    const ids = [...new Set(Array.from(document.querySelectorAll("[data-download-count-id]")).map(node => node.dataset.downloadCountId))];
+    ids.forEach(id => {
+      const item = manuals.find(manual => String(manual.id) === String(id));
+      if (item) void loadDownloadCount(item);
+    });
+  };
+
+  const incrementDownloadCounter = async (manualId) => {
+    const item = manuals.find(manual => String(manual.id) === String(manualId));
+    if (!item || !counterSettings.enabled || !counterSettings.namespace || isLocalPreview) return;
+    try {
+      const payload = await fetchCounter(item, "up");
+      updateDownloadCountElements(item.id, parseCounterValue(payload, Number(item.downloadCount) || 0));
+    } catch (error) {
+      console.warn("Unable to increment download counter:", error);
+    }
+  };
+
   const createManualCard = (item) => {
     const tags = (item.tags || []).slice(0, 5).map(tag => `<span>${escapeHtml(tag)}</span>`).join("");
     const type = getFileType(item);
     const thumbnail = item.thumbnail
       ? `<div class="manual-thumbnail"><img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.title)}"></div>`
       : `<div class="manual-thumbnail manual-thumbnail-fallback"><span>${escapeHtml(type)}</span></div>`;
-    const previewLabel = canInlinePreview(item) ? "線上預覽" : "查看詳情";
-    const previewTag = isPdf(item) ? '<span class="preview-badge">PDF 可直接瀏覽</span>' : (canInlinePreview(item) ? '<span class="preview-badge">可預覽</span>' : '');
+    const previewLabel = canInlinePreview(item) ? tr("線上預覽", "Online Preview") : tr("查看詳情", "View Details");
+    const previewTag = isPdf(item)
+      ? `<span class="preview-badge">${tr("PDF 可直接瀏覽", "PDF Preview Available")}</span>`
+      : (canInlinePreview(item) ? `<span class="preview-badge">${tr("可預覽", "Preview Available")}</span>` : "");
+    const countMarkup = counterSettings.showOnCards ? `
+      <div class="download-count-row" title="${tr("免費下載按鈕累積點擊次數；不代表檔案完整下載完成", "Cumulative free-download button clicks; not guaranteed completed downloads")}">
+        <span>${tr("累積下載", "Downloads")}</span>
+        <strong data-download-count-id="${escapeHtml(item.id)}" data-state="loading">${escapeHtml(String(Math.max(0, Number(item.downloadCount) || 0)))}</strong>
+        <small>${tr("次", "")}</small>
+      </div>` : "";
 
     return `
       <article class="manual-card ${item.featured ? "is-featured" : ""}">
@@ -215,25 +309,26 @@
             <span class="file-badge">${escapeHtml(type)}</span>
             <div class="status-badges">
               ${previewTag}
-              ${item.featured ? '<span class="status-badge featured">精選</span>' : ""}
+              ${item.featured ? `<span class="status-badge featured">${tr("精選", "Featured")}</span>` : ""}
               ${item.isNew ? '<span class="status-badge new">NEW</span>' : ""}
             </div>
           </div>
           <div class="manual-card-body">
-            <p class="manual-category">${escapeHtml(item.category || "未分類")}</p>
+            <p class="manual-category">${escapeHtml(item.category || tr("未分類", "Uncategorized"))}</p>
             <h3>${escapeHtml(item.title)}</h3>
-            <p class="manual-description">${escapeHtml(item.description || "尚未填寫說明。")}</p>
+            <p class="manual-description">${escapeHtml(item.description || tr("尚未填寫說明。", "No description provided."))}</p>
             <div class="tag-list">${tags}</div>
-            <p class="usage-note"><strong>免費使用：</strong>${escapeHtml(item.license || "免費個人學習使用；禁止轉售與冒名發布")}</p>
+            <p class="usage-note"><strong>${tr("免費使用：", "Free use: ")}</strong>${escapeHtml(item.license || tr("免費個人學習使用；禁止轉售與冒名發布", "Free for personal learning; resale and impersonation are prohibited"))}</p>
           </div>
           <dl class="manual-meta">
-            <div><dt>版本</dt><dd>${escapeHtml(item.version || "未標示")}</dd></div>
-            <div><dt>更新</dt><dd>${escapeHtml(formatDate(item.updated))}</dd></div>
-            <div><dt>大小</dt><dd>${escapeHtml(item.size || "未標示")}</dd></div>
+            <div><dt>${tr("版本", "Version")}</dt><dd>${escapeHtml(item.version || tr("未標示", "Not specified"))}</dd></div>
+            <div><dt>${tr("更新", "Updated")}</dt><dd>${escapeHtml(formatDate(item.updated))}</dd></div>
+            <div><dt>${tr("大小", "Size")}</dt><dd>${escapeHtml(item.size || tr("未標示", "Not specified"))}</dd></div>
           </dl>
+          ${countMarkup}
           <div class="manual-actions">
             <button class="button button-secondary detail-button" type="button" data-id="${escapeHtml(item.id)}">${previewLabel}</button>
-            <a class="button button-primary download-button" href="${escapeHtml(item.file)}" data-title="${escapeHtml(item.title)}">免費下載</a>
+            <a class="button button-primary download-button" href="${escapeHtml(item.file)}" data-id="${escapeHtml(item.id)}" data-title="${escapeHtml(item.title)}">${tr("免費下載", "Free Download")}</a>
           </div>
         </div>
       </article>`;
@@ -243,40 +338,23 @@
     if (!elements.manualGrid || !elements.resultSummary) return;
     const visible = getFilteredManuals();
     elements.manualGrid.innerHTML = visible.map(createManualCard).join("");
-    elements.resultSummary.textContent = `共 ${manuals.length} 筆資料，目前顯示 ${visible.length} 筆`;
+    elements.resultSummary.textContent = isEnglish ? `${manuals.length} items total; showing ${visible.length}` : `共 ${manuals.length} 筆資料，目前顯示 ${visible.length} 筆`;
+    loadVisibleDownloadCounts();
     if (elements.emptyState) elements.emptyState.hidden = visible.length > 0;
     elements.manualGrid.hidden = visible.length === 0;
   };
 
   const buildPreviewMedia = (item) => {
-    const safeTitle = escapeHtml(item.title || "檔案預覽");
+    const safeTitle = escapeHtml(item.title || tr("檔案預覽", "File Preview"));
     const safeFile = escapeHtml(item.file || "");
     if (isPdf(item)) {
-      return `
-        <div class="preview-media-shell">
-          <iframe class="preview-iframe" src="${safeFile}#view=FitH" title="${safeTitle} PDF 預覽"></iframe>
-          <p class="preview-helper">此處直接顯示你放在 docs/files 的 PDF。若檔案已由本機工具寫入永久浮水印，預覽與下載都會保留該浮水印。</p>
-        </div>`;
+      return `<div class="preview-media-shell"><iframe class="preview-iframe" src="${safeFile}#view=FitH" title="${safeTitle} ${tr("PDF 預覽", "PDF Preview")}"></iframe><p class="preview-helper">${tr("此處直接顯示你放在 docs/files 的 PDF。若檔案已由本機工具寫入永久浮水印，預覽與下載都會保留該浮水印。", "This directly displays the PDF stored in docs/files. If a permanent watermark was embedded by the local tool, it remains in previews and downloads.")}</p></div>`;
     }
-    if (isImage(item)) {
-      return `
-        <div class="preview-media-shell image-preview-shell">
-          <img class="preview-image" src="${safeFile}" alt="${safeTitle}">
-        </div>`;
-    }
+    if (isImage(item)) return `<div class="preview-media-shell image-preview-shell"><img class="preview-image" src="${safeFile}" alt="${safeTitle}"></div>`;
     if (isHtml(item) || isText(item)) {
-      return `
-        <div class="preview-media-shell">
-          <iframe class="preview-iframe" src="${safeFile}" title="${safeTitle} 預覽"></iframe>
-          <p class="preview-helper">此類型可直接在網站內瀏覽內容；若樣式受瀏覽器限制，可改用新分頁開啟。</p>
-        </div>`;
+      return `<div class="preview-media-shell"><iframe class="preview-iframe" src="${safeFile}" title="${safeTitle} ${tr("預覽", "Preview")}"></iframe><p class="preview-helper">${tr("此類型可直接在網站內瀏覽內容；若樣式受瀏覽器限制，可改用新分頁開啟。", "This file can be viewed on the site. Open it in a new tab if browser restrictions affect formatting.")}</p></div>`;
     }
-    return `
-      <div class="preview-fallback">
-        <div class="preview-fallback-icon">${escapeHtml(getFileType(item))}</div>
-        <h3>此檔案暫不支援站內預覽</h3>
-        <p>目前可直接預覽的類型包含 PDF、圖片、HTML 與文字檔。ZIP 或其他封裝檔案請直接下載使用。</p>
-      </div>`;
+    return `<div class="preview-fallback"><div class="preview-fallback-icon">${escapeHtml(getFileType(item))}</div><h3>${tr("此檔案暫不支援站內預覽", "Inline Preview Not Available")}</h3><p>${tr("目前可直接預覽的類型包含 PDF、圖片、HTML 與文字檔。ZIP 或其他封裝檔案請直接下載使用。", "PDFs, images, HTML, and text files can be previewed. Download ZIP or other packaged files directly.")}</p></div>`;
   };
 
   const showDetail = (id) => {
@@ -285,41 +363,37 @@
     const tags = (item.tags || []).map(tag => `<span>${escapeHtml(tag)}</span>`).join("");
     const previewMarkup = buildPreviewMedia(item);
     const onlinePreviewText = canInlinePreview(item)
-      ? (isPdf(item) ? "此 PDF 直接從 docs/files 載入瀏覽。" : "此檔案支援站內預覽。")
-      : "此檔案類型不支援站內預覽，可查看資訊後直接下載。";
+      ? (isPdf(item) ? tr("此 PDF 直接從 docs/files 載入瀏覽。", "This PDF is loaded directly from docs/files.") : tr("此檔案支援站內預覽。", "This file supports inline preview."))
+      : tr("此檔案類型不支援站內預覽，可查看資訊後直接下載。", "This file type cannot be previewed here; review its details and download it directly.");
+    const countMarkup = counterSettings.showOnCards ? `<div class="download-count-row download-count-dialog"><span>${tr("累積下載", "Downloads")}</span><strong data-download-count-id="${escapeHtml(item.id)}" data-state="loading">${escapeHtml(String(Math.max(0, Number(item.downloadCount) || 0)))}</strong><small>${tr("次", "")}</small></div>` : "";
 
     elements.dialogContent.innerHTML = `
       <div class="preview-layout">
-        <section class="preview-panel preview-media-panel">
-          <div class="preview-panel-head">
-            <span class="dialog-file-badge">${escapeHtml(getFileType(item))}</span>
-            <span class="preview-panel-note">${onlinePreviewText}</span>
-          </div>
-          ${previewMarkup}
-        </section>
-
+        <section class="preview-panel preview-media-panel"><div class="preview-panel-head"><span class="dialog-file-badge">${escapeHtml(getFileType(item))}</span><span class="preview-panel-note">${onlinePreviewText}</span></div>${previewMarkup}</section>
         <aside class="preview-panel preview-info-panel">
-          <p class="manual-category">${escapeHtml(item.category || "未分類")}</p>
+          <p class="manual-category">${escapeHtml(item.category || tr("未分類", "Uncategorized"))}</p>
           <h2>${escapeHtml(item.title)}</h2>
-          <p class="dialog-description">${escapeHtml(item.description || "尚未填寫說明。")}</p>
+          <p class="dialog-description">${escapeHtml(item.description || tr("尚未填寫說明。", "No description provided."))}</p>
           <div class="tag-list">${tags}</div>
-          <div class="preview-license-box"><strong>免費使用：</strong>${escapeHtml(item.license || "免費個人學習使用；禁止轉售與冒名發布")}</div>
+          <div class="preview-license-box"><strong>${tr("免費使用：", "Free use: ")}</strong>${escapeHtml(item.license || tr("免費個人學習使用；禁止轉售與冒名發布", "Free for personal learning; resale and impersonation are prohibited"))}</div>
           <dl class="dialog-meta preview-meta-grid">
-            <div><dt>版本</dt><dd>${escapeHtml(item.version || "未標示")}</dd></div>
-            <div><dt>更新日期</dt><dd>${escapeHtml(formatDate(item.updated))}</dd></div>
-            <div><dt>檔案大小</dt><dd>${escapeHtml(item.size || "未標示")}</dd></div>
-            <div><dt>檔案類型</dt><dd>${escapeHtml(getFileType(item))}</dd></div>
-            <div><dt>內容來源</dt><dd>${escapeHtml(item.source || "未標示")}</dd></div>
-            <div><dt>檔案路徑</dt><dd><code>${escapeHtml(item.file)}</code></dd></div>
+            <div><dt>${tr("版本", "Version")}</dt><dd>${escapeHtml(item.version || tr("未標示", "Not specified"))}</dd></div>
+            <div><dt>${tr("更新日期", "Updated")}</dt><dd>${escapeHtml(formatDate(item.updated))}</dd></div>
+            <div><dt>${tr("檔案大小", "File size")}</dt><dd>${escapeHtml(item.size || tr("未標示", "Not specified"))}</dd></div>
+            <div><dt>${tr("檔案類型", "File type")}</dt><dd>${escapeHtml(getFileType(item))}</dd></div>
+            <div><dt>${tr("內容來源", "Source")}</dt><dd>${escapeHtml(item.source || tr("未標示", "Not specified"))}</dd></div>
+            <div><dt>${tr("檔案路徑", "File path")}</dt><dd><code>${escapeHtml(item.file)}</code></dd></div>
           </dl>
-          ${item.sourceUrl ? `<p class="source-link"><a href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="noopener noreferrer">查看來源或授權說明</a></p>` : ""}
+          ${countMarkup}
+          ${item.sourceUrl ? `<p class="source-link"><a href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="noopener noreferrer">${tr("查看來源或授權說明", "View source or license information")}</a></p>` : ""}
           <div class="preview-actions">
-            <button class="button button-secondary inline-open-button" type="button" data-url="${escapeHtml(item.file)}" data-viewer-url="${isPdf(item) ? escapeHtml(getPdfViewerUrl(item)) : ""}" data-pdf="${isPdf(item) ? "true" : "false"}">${isPdf(item) ? "PDF 預覽頁" : "新分頁開啟"}</button>
-            <a class="button button-primary download-button" href="${escapeHtml(item.file)}" data-title="${escapeHtml(item.title)}">免費下載</a>
+            <button class="button button-secondary inline-open-button" type="button" data-url="${escapeHtml(item.file)}" data-viewer-url="${isPdf(item) ? escapeHtml(getPdfViewerUrl(item)) : ""}" data-pdf="${isPdf(item) ? "true" : "false"}">${isPdf(item) ? tr("PDF 預覽頁", "PDF Preview Page") : tr("新分頁開啟", "Open in New Tab")}</button>
+            <a class="button button-primary download-button" href="${escapeHtml(item.file)}" data-id="${escapeHtml(item.id)}" data-title="${escapeHtml(item.title)}">${tr("免費下載", "Free Download")}</a>
           </div>
         </aside>
       </div>`;
     elements.detailDialog.showModal();
+    void loadDownloadCount(item);
   };
 
   const hasAcceptedLegalNotice = () => localStorage.getItem("manualHubLegalAccepted") === legalVersion;
@@ -734,8 +808,9 @@
     iframe.src = `${item.file}#view=FitH`;
   };
 
-  const startDownload = async (url, title = "") => {
+  const startDownload = async (url, title = "", manualId = "") => {
     if (!url) return;
+    if (manualId) void incrementDownloadCounter(manualId);
     const target = new URL(url, window.location.href);
     const anchor = document.createElement("a");
     anchor.href = target.href;
@@ -750,10 +825,10 @@
     anchor.remove();
   };
 
-  const requestDownload = (url, title = "") => {
-    pendingDownload = { url, title };
+  const requestDownload = (url, title = "", manualId = "") => {
+    pendingDownload = { url, title, manualId };
     if (hasAcceptedLegalNotice() || !elements.downloadDialog) {
-      startDownload(url, title);
+      startDownload(url, title, manualId);
       pendingDownload = null;
       return;
     }
@@ -860,7 +935,7 @@
     const downloadButton = event.target.closest(".download-button");
     if (downloadButton) {
       event.preventDefault();
-      requestDownload(downloadButton.getAttribute("href"), downloadButton.dataset.title || "");
+      requestDownload(downloadButton.getAttribute("href"), downloadButton.dataset.title || "", downloadButton.dataset.id || "");
       return;
     }
 
@@ -885,10 +960,10 @@
   elements.confirmDownload?.addEventListener("click", () => {
     if (!elements.downloadAgreement?.checked || !pendingDownload) return;
     localStorage.setItem("manualHubLegalAccepted", legalVersion);
-    const { url, title } = pendingDownload;
+    const { url, title, manualId } = pendingDownload;
     pendingDownload = null;
     elements.downloadDialog?.close();
-    startDownload(url, title);
+    startDownload(url, title, manualId);
   });
 
   elements.downloadDialog?.addEventListener("click", (event) => {

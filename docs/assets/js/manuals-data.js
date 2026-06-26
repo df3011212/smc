@@ -1,11 +1,15 @@
-/* 由 admin.html 產生，更新日期：2026/6/27 上午3:58:45 */
+/* 由 admin.html 產生，更新日期：2026/6/27 上午6:26:54 */
 window.SITE_CONFIG = {
   "siteName": "SR+SMC+VWAP 多空雙向教練 v6.6.9",
   "subtitle": "Pine Script Coaching • Strategy • Execution",
   "heroLead": "Support Resistance + SMC Coach + VWAP｜集中放置 PDF、Pine Script、ZIP 與教學教材，讓版本更新、下載與查找更清楚。",
   "notice": "本網站供教學與個人研究使用；所有內容免費，不構成投資建議、代操服務或獲利保證。",
-  "legalVersion": "2026-06-26",
+  "legalVersion": "2026-06-27",
   "owner": "Threads（@hongshihong19）",
+  "siteNameEn": "SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
+  "subtitleEn": "Pine Script Coaching • Strategy • Execution",
+  "heroLeadEn": "Support Resistance + SMC Coach + VWAP | A centralized library for PDFs, Pine Script, ZIP packages, and training materials, with clearer versioning, downloads, and search.",
+  "noticeEn": "This website is for education and personal research. All content is free and does not constitute investment advice, managed trading, or a profit guarantee.",
   "watermark": {
     "mainScale": 1.6,
     "cornerScale": 0.68,
@@ -31,7 +35,27 @@ window.SITE_CONFIG = {
       "url": "https://ko-fi.com/hungshiihhungsmc",
       "enabled": false
     }
-  ]
+  ],
+  "downloadCounter": {
+    "enabled": true,
+    "provider": "counterapi-v1",
+    "namespace": "df3011212-smc-downloads-v669",
+    "showOnCards": true
+  },
+  "announcement": {
+    "enabled": true,
+    "mode": "once-version",
+    "version": "2026-06-v1",
+    "title": "網站重要公告",
+    "titleEn": "Important Website Announcement",
+    "content": "歡迎使用 SR+SMC+VWAP 多空雙向教練免費教學資源網站。\n[公告]SR+SMC+VWAP 多空雙向教練 許願成立🎊",
+    "contentEn": "Welcome to the free SR+SMC+VWAP Long/Short Trading Coach learning-resource website.",
+    "buttonLabel": "查看詳情",
+    "buttonLabelEn": "View Details",
+    "url": "articles.html",
+    "image": "",
+    "imageAlt": "網站重要公告"
+  }
 };
 
 window.MANUALS = [
@@ -56,7 +80,9 @@ window.MANUALS = [
     "license": "免費使用：免費個人學習與非商業研究使用；禁止轉售、冒名與移除署名",
     "sourceUrl": "",
     "featured": true,
-    "isNew": true
+    "isNew": true,
+    "downloadCount": 70,
+    "downloadCounterName": "4smc--02-rvol-oi---v2-----mqv5owet"
   },
   {
     "id": "sr-smc-v699-多空實戰k棒教練手冊-完整教練使用教學手冊-浮水印版-mqv5ln3u",
@@ -79,7 +105,9 @@ window.MANUALS = [
     "license": "免費使用：免費個人學習與非商業研究使用；禁止轉售、冒名與移除署名",
     "sourceUrl": "",
     "featured": true,
-    "isNew": true
+    "isNew": true,
+    "downloadCount": 69,
+    "downloadCounterName": "sr-smc-v699--k------mqv5ln3u"
   },
   {
     "id": "sr-smc-vwap-多空雙向教練-v669-完整教練使用教學手冊-浮水印版-mqv5gwu8",
@@ -102,7 +130,9 @@ window.MANUALS = [
     "license": "免費使用：免費個人學習與非商業研究使用；禁止轉售、冒名與移除署名",
     "sourceUrl": "",
     "featured": true,
-    "isNew": true
+    "isNew": true,
+    "downloadCount": 105,
+    "downloadCounterName": "sr-smc-vwap---v669-----mqv5gwu8"
   },
   {
     "id": "支撐阻力-smc-多空雙向教練版-v669-完整教練使用教學手冊-浮水印版-mqv4lf4g",
@@ -125,6 +155,29 @@ window.MANUALS = [
     "license": "免費使用：免費個人學習與非商業研究使用；禁止轉售、冒名與移除署名",
     "sourceUrl": "",
     "featured": true,
-    "isNew": true
+    "isNew": true,
+    "downloadCount": 83,
+    "downloadCounterName": "smc---v669-----mqv4lf4g"
+  }
+];
+
+window.ARTICLES = [
+  {
+    "id": "公告-sr-smc-vwap-多空雙向教練-許願成立",
+    "type": "embed",
+    "typeLabel": "Threads 貼文嵌入",
+    "category": "最新消息",
+    "categoryEn": "",
+    "publishedAt": "2026-06-26",
+    "title": "[公告]SR+SMC+VWAP 多空雙向教練 許願成立🎊",
+    "titleEn": "",
+    "summary": "",
+    "summaryEn": "",
+    "content": "\n<blockquote class=\"text-post-media\" data-text-post-permalink=\"https://www.threads.com/@hongshihong19/post/DaDxXI1n8oA?xmt=AQG0KHS54y7s7LfpEFDCtymBrbomEsDnkxzAa8JrNOkE7g\" data-text-post-version=\"0\" id=\"sr-thread-DaDxXI1n8oA-1782512710837\" style=\"background:#fff;border:1px solid #00000026;border-radius:16px;max-width:650px;margin:1px auto;min-width:270px;padding:0;width:calc(100% - 2px)\"><a href=\"https://www.threads.com/@hongshihong19/post/DaDxXI1n8oA?xmt=AQG0KHS54y7s7LfpEFDCtymBrbomEsDnkxzAa8JrNOkE7g\" style=\"background:#fff;display:block;padding:36px 24px;text-align:center;text-decoration:none;color:#111;font:600 15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\" target=\"_blank\" rel=\"noopener noreferrer\"><div style=\"font-size:32px;line-height:1;margin-bottom:12px\">◎</div><div>在 Threads 查看</div></a></blockquote>\n",
+    "contentEn": "",
+    "coverImage": "",
+    "coverAlt": "[公告]SR+SMC+VWAP 多空雙向教練 許願成立🎊",
+    "enabled": true,
+    "featured": true
   }
 ];

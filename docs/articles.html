@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Threads（@hongshihong19）">
+  <meta name="description" content="SR+SMC+VWAP 多空雙向教練文章、最新消息、版本公告與 Threads 嵌入內容。">
+  <meta name="theme-color" content="#14213d">
+  <title>文章與公告｜SR+SMC+VWAP 多空雙向教練 v6.6.9</title>
+  <link rel="stylesheet" href="assets/css/style.css?v=8.1.15">
+  <script src="assets/js/i18n.js?v=8.1.15"></script>
+  <script src="assets/js/visitor-counter.js?v=8.1.15" defer></script>
+</head>
+<body class="articles-page">
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="回到首頁">
+        <span class="brand-mark" aria-hidden="true">SR</span>
+        <span><strong id="siteName">SR+SMC+VWAP 多空雙向教練 v6.6.9</strong><small id="siteSubtitle">Pine Script Coaching • Strategy • Execution</small></span>
+      </a>
+      <nav class="header-actions" aria-label="網站操作">
+        <div id="donationButtons" class="header-donation-buttons" aria-label="打賞與贊助連結"></div>
+        <a class="button button-secondary" href="index.html">手冊首頁</a>
+        <a class="button button-primary" href="articles.html" aria-current="page">文章公告</a>
+        <a class="button button-secondary" href="legal.html">法律與風險聲明</a>
+        <button id="languageToggle" class="button button-language" type="button" aria-label="切換為英文" title="Switch to English">EN</button>
+        <button id="themeToggle" class="icon-button" type="button" aria-label="切換深色模式" title="切換深色模式">☾</button>
+      </nav>
+    </header>
+
+    <section class="public-link-bar" aria-label="官方連結">
+      <div class="public-link-intro"><span class="eyebrow">Official Links</span><strong>官方安裝與作者社群</strong></div>
+      <nav class="public-link-actions" aria-label="TradingView 腳本與 Threads 連結">
+        <a id="tradingViewLink" class="public-link public-link-tradingview" href="https://tw.tradingview.com/script/v9sZVYZ9/" target="_blank" rel="noopener noreferrer"><span class="public-link-kicker">TradingView 腳本</span><strong>SR＋SMC＋VWAP 多空雙向教練 TradingView 腳本 安裝</strong><span class="public-link-arrow" aria-hidden="true">↗</span></a>
+        <a class="public-link public-link-rvol" href="https://tw.tradingview.com/script/s1XifCPs/" target="_blank" rel="noopener noreferrer">
+          <span class="public-link-kicker">TradingView 腳本</span>
+          <strong>SMC 組合02｜RVOL + Open Interest 副圖教練 v2 腳本安裝</strong>
+          <span class="public-link-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a id="threadsLink" class="public-link public-link-threads" href="https://www.threads.com/@hongshihong19" target="_blank" rel="noopener noreferrer"><span class="public-link-kicker">作者 Threads</span><strong>Threads（@hongshihong19）</strong><span class="public-link-arrow" aria-hidden="true">↗</span></a>
+      </nav>
+    </section>
+
+    <main class="article-main">
+      <section class="article-hero">
+        <div><span class="eyebrow">Articles & Updates</span><h1>文章、最新消息與網站公告</h1><p>查看教練版本更新、使用說明、交易觀念文章，以及由 Threads 等平台嵌入的公開內容。</p></div>
+        <div class="article-hero-stats"><strong id="publicArticleCount">0</strong><span>篇公開文章</span></div>
+      </section>
+
+      <section id="articleListView" class="article-library">
+        <div class="toolbar article-toolbar">
+          <label class="search-box"><span aria-hidden="true">⌕</span><input id="articleSearch" type="search" placeholder="搜尋文章標題、摘要或分類..." autocomplete="off"></label>
+          <label class="select-box"><span>排序</span><select id="articleSort"><option value="date-desc">最新發布</option><option value="date-asc">最早發布</option><option value="featured">精選優先</option></select></label>
+        </div>
+        <div id="articleCategoryFilters" class="category-filters" aria-label="文章分類篩選"></div>
+        <div id="articleGrid" class="article-public-grid" aria-live="polite"></div>
+        <div id="articleEmptyState" class="empty-state" hidden><div class="empty-icon">⌕</div><h2>目前沒有符合條件的文章</h2><p>請改用其他關鍵字或切換分類。</p></div>
+      </section>
+
+      <section id="articleDetailView" class="article-detail-view" hidden>
+        <a class="article-back-link" href="articles.html">← 返回文章列表</a>
+        <article id="articleDetail" class="article-detail-card"></article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div><strong id="footerSiteName">SR+SMC+VWAP 多空雙向教練 v6.6.9</strong><p>免費教學資源網站；不收費、不代操、不保證收益，亦非 TradingView、GitHub 或任何金融機構的官方網站。</p><nav class="footer-links" aria-label="法律資訊"><a href="index.html">手冊首頁</a><a href="legal.html">使用條款與免責聲明</a><a href="privacy.html">隱私政策</a><a href="rights.html">著作權與下架通知</a></nav></div>
+      <div class="footer-copyright"><p><strong>作者／著作權人：</strong><a href="https://www.threads.com/@hongshihong19" target="_blank" rel="noopener noreferrer">Threads（@hongshihong19）</a></p><p><strong>版本：</strong>v6.6.9</p><p>© 2026 Threads（@hongshihong19）著作權所有。</p></div>
+    </footer>
+  </div>
+  <script src="assets/js/manuals-data.js?v=8.1.15"></script>
+  <script src="assets/js/site-announcement.js?v=8.1.15"></script>
+  <script src="assets/js/articles.js?v=8.1.15"></script>
+</body>
+</html>
