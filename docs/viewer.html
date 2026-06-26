@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Threads（@hongshihong19）">
+  <meta name="robots" content="noindex">
+  <title>PDF 預覽｜SR+SMC+VWAP 多空雙向教練</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="page-shell viewer-shell">
+    <header class="site-header viewer-header">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true">SR</span>
+        <span><strong>PDF 預覽頁</strong><small>PDF Preview Viewer</small></span>
+      </a>
+      <nav class="header-actions">
+        <a id="viewerDownload" class="button button-primary" href="#">下載 PDF</a>
+        <a class="button button-secondary" href="index.html">返回首頁</a>
+      </nav>
+    </header>
+    <section class="public-link-bar" aria-label="官方連結">
+      <div class="public-link-intro">
+        <span class="eyebrow">Official Links</span>
+        <strong>官方安裝與作者社群</strong>
+      </div>
+      <nav class="public-link-actions" aria-label="TradingView 與 Threads 連結">
+        <a class="public-link public-link-tradingview" href="https://tw.tradingview.com/script/v9sZVYZ9/" target="_blank" rel="noopener noreferrer">
+          <span class="public-link-kicker">TradingView 腳本</span>
+          <strong>SR＋SMC＋VWAP 多空雙向教練 TradingView 腳本 安裝</strong>
+          <span class="public-link-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="public-link public-link-threads" href="https://www.threads.com/@hongshihong19" target="_blank" rel="noopener noreferrer">
+          <span class="public-link-kicker">作者 Threads</span>
+          <strong>Threads（@hongshihong19）</strong>
+          <span class="public-link-arrow" aria-hidden="true">↗</span>
+        </a>
+      </nav>
+    </section>
+
+
+    <main class="viewer-main">
+      <section class="manual-section viewer-panel">
+        <div class="section-heading compact-heading">
+          <div>
+            <span class="eyebrow">PDF PREVIEW</span>
+            <h2 id="viewerTitle">PDF 預覽</h2>
+          </div>
+          <p>此頁直接顯示 docs/files 內的 PDF，不會再另外疊加或產生線上預覽浮水印。</p>
+        </div>
+
+        <div class="viewer-watermark-frame">
+          <iframe id="viewerFrame" class="preview-iframe viewer-iframe" src="about:blank" title="PDF 預覽"></iframe>
+          <div id="viewerLoading" class="pdf-preview-loading">正在載入 PDF，請稍候…</div>
+        </div>
+
+        <div class="notice-bar viewer-note">
+          <span class="notice-icon" aria-hidden="true">!</span>
+          <div>
+            <strong>永久浮水印會保留：</strong>
+            <p>若這份 PDF 已經由本機管理工具寫入永久浮水印，網站預覽與下載仍會顯示該浮水印。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer viewer-public-footer">
+      <div>
+        <strong>SR+SMC+VWAP 多空雙向教練 v6.6.9</strong>
+        <p>公開 PDF 預覽與免費下載頁面。</p>
+      </div>
+      <div class="footer-copyright">
+        <p><strong>作者／著作權人：</strong><a href="https://www.threads.com/@hongshihong19" target="_blank" rel="noopener noreferrer">Threads（@hongshihong19）</a></p>
+        <p><strong>版本：</strong>v6.6.9</p>
+        <p>© 2026 Threads（@hongshihong19）著作權所有。</p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+      const params = new URLSearchParams(window.location.search);
+      const file = params.get("file") || "";
+      const title = params.get("title") || "PDF 預覽";
+      const frame = document.querySelector("#viewerFrame");
+      const loading = document.querySelector("#viewerLoading");
+      const titleEl = document.querySelector("#viewerTitle");
+      const download = document.querySelector("#viewerDownload");
+
+      const safeName = (value) => String(value).replace(/[\/:*?"<>|]+/g, "_").trim() || "PDF";
+      titleEl.textContent = title;
+      document.title = `${title}｜PDF 預覽`;
+
+      try {
+        if (!file) throw new Error("找不到 PDF 檔案路徑");
+        const sourceUrl = new URL(file, window.location.href).href;
+        frame.src = `${sourceUrl}#view=FitH`;
+        download.href = sourceUrl;
+        download.download = `${safeName(title)}.pdf`;
+        frame.addEventListener("load", () => { loading.hidden = true; }, { once: true });
+        window.setTimeout(() => { loading.hidden = true; }, 2500);
+      } catch (error) {
+        console.error(error);
+        loading.classList.add("is-error");
+        loading.textContent = `無法開啟 PDF：${error.message || error}`;
+        download.removeAttribute("href");
+        download.textContent = "PDF 讀取失敗";
+      }
+    })();
+  </script>
+</body>
+</html>

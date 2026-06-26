@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Threads（@hongshihong19）">
+  <meta name="description" content="SR+SMC+VWAP 多空雙向教練 v6.6.9 下載中心，集中整理教練手冊、Pine Script 教材與學習檔案。">
+  <meta name="theme-color" content="#14213d">
+  <title>SR+SMC+VWAP 多空雙向教練 v6.6.9</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="回到首頁">
+        <span class="brand-mark" aria-hidden="true">SR</span>
+        <span>
+          <strong id="siteName">SR+SMC+VWAP 多空雙向教練 v6.6.9</strong>
+          <small id="siteSubtitle">Pine Script Coaching • Strategy • Execution</small>
+        </span>
+      </a>
+
+      <nav class="header-actions" aria-label="網站操作">
+        <a class="button button-secondary" href="#manuals">手冊下載</a>
+        <a class="button button-secondary" href="legal.html">法律與風險聲明</a>
+        <button id="themeToggle" class="icon-button" type="button" aria-label="切換深色模式" title="切換深色模式">☾</button>
+      </nav>
+    </header>
+    <section class="public-link-bar" aria-label="官方連結">
+      <div class="public-link-intro">
+        <span class="eyebrow">Official Links</span>
+        <strong>官方安裝與作者社群</strong>
+      </div>
+      <nav class="public-link-actions" aria-label="TradingView 與 Threads 連結">
+        <a class="public-link public-link-tradingview" href="https://tw.tradingview.com/script/v9sZVYZ9/" target="_blank" rel="noopener noreferrer">
+          <span class="public-link-kicker">TradingView 腳本</span>
+          <strong>SR＋SMC＋VWAP 多空雙向教練 TradingView 腳本 安裝</strong>
+          <span class="public-link-arrow" aria-hidden="true">↗</span>
+        </a>
+        <a class="public-link public-link-threads" href="https://www.threads.com/@hongshihong19" target="_blank" rel="noopener noreferrer">
+          <span class="public-link-kicker">作者 Threads</span>
+          <strong>Threads（@hongshihong19）</strong>
+          <span class="public-link-arrow" aria-hidden="true">↗</span>
+        </a>
+      </nav>
+    </section>
+
+
+    <main>
+      <section class="hero hero-manual">
+        <div class="hero-copy">
+          <span class="eyebrow">Modern Corporate Training Manual</span>
+          <h1 id="heroTitle">SR+SMC+VWAP 多空雙向教練 v6.6.9</h1>
+          <p id="heroLead">Support Resistance + SMC Coach + VWAP｜集中放置 PDF、Pine Script、ZIP 與教學教材，讓版本更新、下載與查找更清楚。</p>
+
+          <div class="hero-pills" aria-label="網站重點資訊">
+            <span class="meta-pill">最新版本 v6.6.9</span>
+            <span class="meta-pill">企業培訓手冊風</span>
+            <span class="meta-pill">支援 PDF 線上預覽</span>
+            <span class="meta-pill">GitHub Pages 靜態部署</span>
+          </div>
+
+          <div id="localDraftNotice" class="draft-notice" hidden>
+            目前首頁顯示的是本機草稿資料。若要同步到 GitHub 公開網站，仍需從管理頁匯出新的 <code>manuals-data.js</code> 並重新上傳。
+          </div>
+
+          <div class="hero-actions">
+            <a class="button button-primary" href="#manuals">立即瀏覽手冊</a>
+            <a class="button button-ghost" href="legal.html">使用與風險聲明</a>
+          </div>
+
+          <div class="hero-stats" aria-label="網站資料統計">
+            <article class="stat-card">
+              <span id="manualCount">0</span>
+              <small>份手冊與檔案</small>
+            </article>
+            <article class="stat-card">
+              <span id="categoryCount">0</span>
+              <small>個內容分類</small>
+            </article>
+            <article class="stat-card">
+              <span id="latestDate">—</span>
+              <small>最近更新日期</small>
+            </article>
+          </div>
+        </div>
+
+        <aside class="hero-visual" aria-label="精選手冊輪播預覽">
+          <div class="hero-carousel-shell">
+            <div class="hero-carousel-header">
+              <div>
+                <span class="eyebrow">Featured Slides</span>
+                <h2>精選手冊投影輪播</h2>
+              </div>
+              <div class="hero-carousel-controls">
+                <button id="heroPrev" class="carousel-nav" type="button" aria-label="上一張">‹</button>
+                <button id="heroNext" class="carousel-nav" type="button" aria-label="下一張">›</button>
+              </div>
+            </div>
+
+            <div id="heroCarousel" class="hero-carousel" aria-live="polite">
+              <article class="hero-slide is-active">
+                <img src="assets/images/slide-01.png" alt="SR+SMC+VWAP 多空雙向教練 v6.6.9 封面">
+                <div class="hero-slide-caption">
+                  <strong>01</strong>
+                  <div>
+                    <h3>SR+SMC+VWAP 多空雙向教練 v6.6.9</h3>
+                    <p>完整使用教學手冊｜主教練手冊</p>
+                  </div>
+                </div>
+              </article>
+              <article class="hero-slide">
+                <img src="assets/images/slide-02.png" alt="SR + SMC 多空雙向教練實戰 K 棒情境教學手冊">
+                <div class="hero-slide-caption">
+                  <strong>02</strong>
+                  <div>
+                    <h3>實戰 K 棒情境教學手冊</h3>
+                    <p>多單／空單核心流程與情境解析</p>
+                  </div>
+                </div>
+              </article>
+              <article class="hero-slide">
+                <img src="assets/images/slide-03.png" alt="支撐阻力加 SMC 多空雙向教練版">
+                <div class="hero-slide-caption">
+                  <strong>03</strong>
+                  <div>
+                    <h3>支撐阻力 + SMC 多空雙向教練版</h3>
+                    <p>15M 進場｜1H 主要離場｜人工停損與報酬比</p>
+                  </div>
+                </div>
+              </article>
+              <article class="hero-slide">
+                <img src="assets/images/slide-04.png" alt="SMC 組合 02 RVOL 加 Open Interest 副圖教練 v2">
+                <div class="hero-slide-caption">
+                  <strong>04</strong>
+                  <div>
+                    <h3>SMC 組合 02｜RVOL + Open Interest</h3>
+                    <p>副圖教練 v2｜新手從零到實戰完整使用說明書</p>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <div id="heroDots" class="hero-dots" aria-label="輪播頁面切換">
+              <button class="hero-dot is-active" type="button" aria-label="切換到第 1 張"></button>
+              <button class="hero-dot" type="button" aria-label="切換到第 2 張"></button>
+              <button class="hero-dot" type="button" aria-label="切換到第 3 張"></button>
+              <button class="hero-dot" type="button" aria-label="切換到第 4 張"></button>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="overview-section">
+        <div class="section-heading compact-heading">
+          <div>
+            <span class="eyebrow">Training Overview</span>
+            <h2>訓練內容重點</h2>
+          </div>
+          <p>以現代企業培訓手冊的資訊層級，快速看懂這份教練系統的核心內容。</p>
+        </div>
+
+        <div class="overview-grid">
+          <article class="overview-card">
+            <span class="overview-index">01</span>
+            <h3>快速上手</h3>
+            <p>從基礎觀念到實戰應用，建立多空雙向教練的使用流程與節奏。</p>
+          </article>
+          <article class="overview-card">
+            <span class="overview-index">02</span>
+            <h3>指標架構</h3>
+            <p>整理 S/R、SMC、OB、FVG、VWAP 與平行通道的模組化結構。</p>
+          </article>
+          <article class="overview-card">
+            <span class="overview-index">03</span>
+            <h3>K 棒情境講解</h3>
+            <p>透過路徑、節點與情境示意，提升判讀與決策的一致性。</p>
+          </article>
+          <article class="overview-card">
+            <span class="overview-index">04</span>
+            <h3>核心程式碼說明</h3>
+            <p>理解程式運作邏輯、設定項目與後續維護方式，便於持續迭代。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="notice-bar" aria-label="網站公告">
+        <span class="notice-icon" aria-hidden="true">i</span>
+        <div>
+          <strong>全部內容免費提供，不收取課程費、會員費或下載費。</strong>
+          <p id="siteNotice">本網站供教學與個人研究使用；下載前請確認版本、更新日期與適用內容。</p>
+        </div>
+      </section>
+
+      <section class="legal-summary" aria-label="重要法律與風險提醒">
+        <div class="section-heading compact-heading">
+          <div>
+            <span class="eyebrow">Legal & Risk Notice</span>
+            <h2>下載與使用前請先了解</h2>
+          </div>
+          <a class="button button-secondary" href="legal.html">查看完整聲明</a>
+        </div>
+        <div class="legal-summary-grid">
+          <article>
+            <span>01</span>
+            <h3>免費不等於放棄著作權</h3>
+            <p>教材可免費下載與個人學習；除另有授權，不得冒名、移除署名、轉售或付費再包裝。</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>不構成投資建議</h3>
+            <p>內容僅為技術教學與研究，不提供代操、個別化買賣建議或獲利保證。</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>程式與資料可能有誤</h3>
+            <p>指標、腳本與範例應先回測及模擬驗證，使用者須自行承擔交易與系統風險。</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>尊重第三方權利</h3>
+            <p>如認為內容涉及著作權、商標或個資，請依權利通知頁提供具體資料申請處理。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="manuals" class="manual-section">
+        <div class="section-heading">
+          <div>
+            <span class="eyebrow">Manual Library</span>
+            <h2>教練手冊下載中心</h2>
+          </div>
+          <p id="resultSummary">正在載入資料...</p>
+        </div>
+
+        <div class="toolbar">
+          <label class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input id="searchInput" type="search" placeholder="搜尋手冊名稱、分類、標籤或內容..." autocomplete="off">
+          </label>
+
+          <label class="select-box">
+            <span>排序</span>
+            <select id="sortSelect">
+              <option value="updated-desc">最近更新</option>
+              <option value="updated-asc">最早更新</option>
+              <option value="title-asc">名稱 A–Z</option>
+              <option value="featured">精選優先</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="categoryFilters" class="category-filters" aria-label="分類篩選"></div>
+
+        <div id="manualGrid" class="manual-grid" aria-live="polite"></div>
+
+        <div id="emptyState" class="empty-state" hidden>
+          <div class="empty-icon" aria-hidden="true">⌕</div>
+          <h3>找不到符合條件的手冊</h3>
+          <p>請改用其他關鍵字，或切換到「全部」分類。</p>
+          <button id="resetFilters" class="button button-secondary" type="button">清除篩選</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong id="footerSiteName">SR+SMC+VWAP 多空雙向教練 v6.6.9</strong>
+        <p>免費教學資源網站；不收費、不代操、不保證收益，亦非 TradingView、GitHub 或任何金融機構的官方網站。</p>
+        <nav class="footer-links" aria-label="法律資訊">
+          <a href="legal.html">使用條款與免責聲明</a>
+          <a href="privacy.html">隱私政策</a>
+          <a href="rights.html">著作權與下架通知</a>
+        </nav>
+      </div>
+      <div class="footer-copyright">
+        <p><strong>作者／著作權人：</strong><a href="https://www.threads.com/@hongshihong19" target="_blank" rel="noopener noreferrer">Threads（@hongshihong19）</a></p>
+        <p><strong>版本：</strong>v6.6.9</p>
+        <p>© 2026 Threads（@hongshihong19）著作權所有。</p>
+      </div>
+</footer>
+  </div>
+
+  <dialog id="detailDialog" class="detail-dialog preview-dialog">
+    <div class="preview-dialog-shell">
+      <button class="dialog-close" type="button" aria-label="關閉">×</button>
+      <div id="dialogContent"></div>
+    </div>
+  </dialog>
+
+  <dialog id="downloadDialog" class="download-dialog">
+    <div class="download-dialog-content">
+      <span class="eyebrow">Free Download Notice</span>
+      <h2>下載前確認</h2>
+      <p>本網站內容全部免費，不收取任何費用。教材僅供教學、研究與個人學習，不構成投資建議、代操服務或獲利保證。</p>
+      <ul>
+        <li>免費下載不代表放棄著作權或允許轉售。</li>
+        <li>請先回測、模擬並確認程式碼與參數後再使用。</li>
+        <li>投資與交易可能造成部分或全部本金損失，結果由使用者自行承擔。</li>
+      </ul>
+      <label class="agreement-check">
+        <input id="downloadAgreement" type="checkbox">
+        <span>我已閱讀並同意<a href="legal.html">使用條款與風險聲明</a>。</span>
+      </label>
+      <div class="download-dialog-actions">
+        <button id="cancelDownload" class="button button-secondary" type="button">取消</button>
+        <button id="confirmDownload" class="button button-primary" type="button" disabled>同意並免費下載</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="assets/js/manuals-data.js"></script>
+  <script src="assets/js/pdf-lib.min.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
