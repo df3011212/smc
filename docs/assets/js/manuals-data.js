@@ -1,11 +1,11 @@
-/* 由 admin.html 產生，更新日期：2026/6/27 下午11:54:50 */
+/* 由 admin.html 產生，更新日期：2026/6/28 上午4:13:33 */
 window.SITE_CONFIG = {
   "siteName": "SR+SMC+VWAP 多空雙向教練 v6.6.9",
   "subtitle": "Pine Script Coaching • Strategy • Execution",
   "heroLead": "Support Resistance + SMC Coach + VWAP｜集中放置 PDF、Pine Script、ZIP 與教學教材，讓版本更新、下載與查找更清楚。",
   "notice": "本網站供教學與個人研究使用；所有內容免費，不構成投資建議、代操服務或獲利保證。",
   "legalVersion": "2026-06-27",
-  "homeUpdatedAt": "2026-06-27T15:54:50.878Z",
+  "homeUpdatedAt": "2026-06-27T20:13:33.935Z",
   "homeUpdatedAtAuto": true,
   "owner": "Threads（@hongshihong19）",
   "siteNameEn": "SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
@@ -75,6 +75,28 @@ window.SITE_CONFIG = {
     "url": "articles.html",
     "image": "assets/uploads/articles/2026-06-v1-announcement-20260627133750-28myv.webp",
     "imageAlt": "網站重要公告"
+  },
+  "officialLinks": {
+    "eyebrow": "Featured Links",
+    "title": "SMC 組合02副圖｜RVOL 與 OI｜作者 Threads",
+    "main": {
+      "enabled": true,
+      "kicker": "TradingView 主圖",
+      "title": "SR＋SMC＋VWAP 多空雙向教練 v6.6.9",
+      "url": "https://tw.tradingview.com/script/v9sZVYZ9/"
+    },
+    "rvol": {
+      "enabled": true,
+      "kicker": "SMC 組合02副圖",
+      "title": "RVOL + Open Interest 副圖教練 v2",
+      "url": "https://tw.tradingview.com/script/s1XifCPs/"
+    },
+    "threads": {
+      "enabled": true,
+      "kicker": "作者 Threads",
+      "title": "Threads（@hongshihong19）",
+      "url": "https://www.threads.com/@hongshihong19"
+    }
   }
 };
 

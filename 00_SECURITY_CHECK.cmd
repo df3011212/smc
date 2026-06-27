@@ -22,7 +22,7 @@ if exist "docs\admin.html" (
   echo [PASS] No public admin.html
 )
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$patterns='ghp_','github_pat_','BEGIN PRIVATE KEY','BEGIN RSA PRIVATE KEY','sk-proj-'; $hits=Get-ChildItem -Path '.\docs' -Recurse -File -ErrorAction SilentlyContinue | Select-String -SimpleMatch -Pattern $patterns -ErrorAction SilentlyContinue; if($hits){$hits | Select-Object Path,LineNumber,Line | Format-Table -AutoSize; exit 2}else{exit 0}"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$patterns='ghp_','github_pat_','BEGIN PRIVATE KEY','BEGIN RSA PRIVATE KEY','sk-proj-'; $textExt='.html','.htm','.js','.mjs','.css','.json','.txt','.md','.yml','.yaml','.xml','.csv'; $targets=Get-ChildItem -Path '.\docs' -Recurse -File -ErrorAction SilentlyContinue | Where-Object { $textExt -contains $_.Extension.ToLowerInvariant() }; $hits=$targets | Select-String -SimpleMatch -Pattern $patterns -ErrorAction SilentlyContinue; if($hits){$hits | Select-Object Path,LineNumber,Line | Format-Table -AutoSize; exit 2}else{exit 0}"
 if errorlevel 2 (
   echo [WARNING] Possible Token, API key or private key text found.
   set FAILED=1

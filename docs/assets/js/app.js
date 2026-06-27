@@ -60,14 +60,23 @@
     videoDialogClose: document.querySelector("#videoDialogClose"),
     videoDialogTitle: document.querySelector("#videoDialogTitle"),
     videoDialogDescription: document.querySelector("#videoDialogDescription"),
-    homepageVideoPlayer: document.querySelector("#homepageVideoPlayer")
+    homepageVideoPlayer: document.querySelector("#homepageVideoPlayer"),
+    officialLinksBar: document.querySelector(".public-link-bar"),
+    officialLinksEyebrow: document.querySelector(".public-link-intro .eyebrow"),
+    officialLinksTitle: document.querySelector(".public-link-intro strong"),
+    officialMainLink: document.querySelector(".public-link-tradingview"),
+    officialRvolLink: document.querySelector(".public-link-rvol"),
+    officialThreadsLink: document.querySelector(".public-link-threads"),
+    starMainButton: document.querySelector(".star-button-primary"),
+    starMainProductLink: document.querySelector(".star-product-frame")
   };
 
   const state = {
     query: "",
     category: "全部",
     sort: "updated-desc",
-    carouselIndex: 0
+    carouselIndex: 0,
+    manualPageIndex: 0
   };
 
   const legalVersion = config.legalVersion || "2026-06-27";
@@ -162,6 +171,83 @@
   const isText = (item) => previewKinds.text.includes(getFileType(item));
   const canInlinePreview = (item) => isPdf(item) || isImage(item) || isHtml(item) || isText(item);
   const getPdfViewerUrl = (item) => `viewer.html?file=${encodeURIComponent(item.file || "")}&title=${encodeURIComponent(item.title || tr("PDF 預覽", "PDF Preview"))}`;
+
+  const DEFAULT_OFFICIAL_LINKS = Object.freeze({
+    eyebrow: "Featured Links",
+    title: "SMC 組合02副圖｜RVOL 與 OI｜作者 Threads",
+    main: {
+      enabled: true,
+      kicker: "TradingView 主圖",
+      title: "SR＋SMC＋VWAP 多空雙向教練 v6.6.9",
+      url: "https://tw.tradingview.com/script/v9sZVYZ9/"
+    },
+    rvol: {
+      enabled: true,
+      kicker: "SMC 組合02副圖",
+      title: "RVOL + Open Interest 副圖教練 v2",
+      url: "https://tw.tradingview.com/script/s1XifCPs/"
+    },
+    threads: {
+      enabled: true,
+      kicker: "作者 Threads",
+      title: "Threads（@hongshihong19）",
+      url: "https://www.threads.com/@hongshihong19"
+    }
+  });
+
+  const normalizeOfficialLinkItem = (item = {}, fallback = {}) => {
+    const rawTitle = String(item.title || fallback.title || "").trim();
+    const migratedTitle = rawTitle === "SR＋SMC＋VWAP 多空雙向教練"
+      ? "SR＋SMC＋VWAP 多空雙向教練 v6.6.9"
+      : rawTitle;
+    return {
+      enabled: item.enabled !== false,
+      kicker: String(item.kicker || fallback.kicker || "").trim().slice(0, 40),
+      title: migratedTitle.slice(0, 100),
+      url: String(item.url || fallback.url || "").trim()
+    };
+  };
+
+  const getOfficialLinks = () => {
+    const source = config.officialLinks || {};
+    return {
+      eyebrow: String(source.eyebrow || DEFAULT_OFFICIAL_LINKS.eyebrow).trim().slice(0, 40),
+      title: String(source.title || DEFAULT_OFFICIAL_LINKS.title).trim().slice(0, 100),
+      main: normalizeOfficialLinkItem(source.main, DEFAULT_OFFICIAL_LINKS.main),
+      rvol: normalizeOfficialLinkItem(source.rvol, DEFAULT_OFFICIAL_LINKS.rvol),
+      threads: normalizeOfficialLinkItem(source.threads, DEFAULT_OFFICIAL_LINKS.threads)
+    };
+  };
+
+  const isSafePublicLink = (value = "") => {
+    try { return ["https:", "http:"].includes(new URL(value, window.location.href).protocol); }
+    catch { return false; }
+  };
+
+  const applyOfficialLinkCard = (element, item) => {
+    if (!element) return;
+    element.hidden = !item.enabled;
+    if (item.enabled && isSafePublicLink(item.url)) element.href = item.url;
+    const kicker = element.querySelector(".public-link-kicker");
+    const title = element.querySelector("strong");
+    if (kicker) kicker.textContent = item.kicker;
+    if (title) title.textContent = item.title;
+  };
+
+  const renderOfficialLinks = () => {
+    const settings = getOfficialLinks();
+    if (elements.officialLinksEyebrow) elements.officialLinksEyebrow.textContent = settings.eyebrow;
+    if (elements.officialLinksTitle) elements.officialLinksTitle.textContent = settings.title;
+    applyOfficialLinkCard(elements.officialMainLink, settings.main);
+    applyOfficialLinkCard(elements.officialRvolLink, settings.rvol);
+    applyOfficialLinkCard(elements.officialThreadsLink, settings.threads);
+    const visibleCount = [settings.main, settings.rvol, settings.threads].filter(item => item.enabled).length;
+    if (elements.officialLinksBar) elements.officialLinksBar.hidden = visibleCount === 0;
+    if (settings.main.enabled && isSafePublicLink(settings.main.url)) {
+      if (elements.starMainButton) elements.starMainButton.href = settings.main.url;
+      if (elements.starMainProductLink) elements.starMainProductLink.href = settings.main.url;
+    }
+  };
 
   const DEFAULT_DONATION_LINKS = [
     { id: "ko-fi", label: "打賞／贊助", icon: "☕", url: "https://ko-fi.com/hungshiihhungsmc", enabled: true }
@@ -271,6 +357,7 @@
     if (elements.heroLead) elements.heroLead.textContent = isEnglish ? (config.heroLeadEn || "A centralized library for PDFs, Pine Script, ZIP packages, and training materials, with clearer versioning, downloads, and search.") : (config.heroLead || "集中整理教材與下載內容。");
     if (elements.siteNotice) elements.siteNotice.textContent = isEnglish ? (config.noticeEn || "This website is for education and personal research. All content is free and is not investment advice.") : (config.notice || "歡迎使用教練手冊下載中心。");
     if (elements.currentYear) elements.currentYear.textContent = new Date().getFullYear();
+    renderOfficialLinks();
   };
 
   const updateDraftIndicator = () => {
@@ -416,6 +503,32 @@
     }
   };
 
+  const createManualGallery = (visible) => {
+    if (!visible.length) return "";
+    const total = visible.length;
+    const currentIndex = Math.max(0, Math.min(state.manualPageIndex, total - 1));
+    const item = visible[currentIndex];
+    const pageDots = visible.map((manual, index) => `
+      <button class="manual-page-dot ${index === currentIndex ? "is-active" : ""}" type="button" data-manual-page="${index}" aria-label="${escapeHtml(tr("切換到第", "Go to page "))} ${index + 1} ${escapeHtml(tr("本手冊", "manual"))}" aria-current="${index === currentIndex ? "true" : "false"}">${index + 1}</button>`).join("");
+
+    return `
+      <div class="manual-gallery-shell">
+        <div class="manual-gallery-head">
+          <div class="manual-gallery-controls">
+            <button class="manual-nav-button" type="button" data-manual-nav="prev">← ${tr("上一頁", "Previous")}</button>
+            <div class="manual-page-indicator">${tr("第", "Page ")} <strong>${currentIndex + 1}</strong> / ${total} ${tr("本", "")}</div>
+            <button class="manual-nav-button" type="button" data-manual-nav="next">${tr("下一頁", "Next")} →</button>
+          </div>
+        </div>
+        <div class="manual-gallery-stage">
+          ${createManualCard(item)}
+        </div>
+        <div class="manual-gallery-footer">
+          <div class="manual-page-dots" aria-label="${escapeHtml(tr("手冊頁碼導航", "Manual page navigation"))}">${pageDots}</div>
+        </div>
+      </div>`;
+  };
+
   const createManualCard = (item) => {
     const tags = (item.tags || []).slice(0, 5).map(tag => `<span>${escapeHtml(tag)}</span>`).join("");
     const type = getFileType(item);
@@ -469,8 +582,19 @@
   const renderManuals = () => {
     if (!elements.manualGrid || !elements.resultSummary) return;
     const visible = getFilteredManuals();
-    elements.manualGrid.innerHTML = visible.map(createManualCard).join("");
-    elements.resultSummary.textContent = isEnglish ? `${manuals.length} items total; showing ${visible.length}` : `共 ${manuals.length} 筆資料，目前顯示 ${visible.length} 筆`;
+    if (visible.length === 0) {
+      state.manualPageIndex = 0;
+      elements.manualGrid.innerHTML = "";
+    } else if (state.manualPageIndex >= visible.length) {
+      state.manualPageIndex = visible.length - 1;
+    } else if (state.manualPageIndex < 0) {
+      state.manualPageIndex = 0;
+    }
+
+    elements.manualGrid.innerHTML = visible.length ? createManualGallery(visible) : "";
+    elements.resultSummary.textContent = visible.length
+      ? (isEnglish ? `${manuals.length} items total · showing page ${state.manualPageIndex + 1} of ${visible.length}` : `共 ${manuals.length} 筆資料，目前顯示第 ${state.manualPageIndex + 1} / ${visible.length} 本`)
+      : (isEnglish ? `${manuals.length} items total; showing 0` : `共 ${manuals.length} 筆資料，目前顯示 0 筆`);
     loadVisibleDownloadCounts();
     if (elements.emptyState) elements.emptyState.hidden = visible.length > 0;
     elements.manualGrid.hidden = visible.length === 0;
@@ -487,6 +611,16 @@
       return `<div class="preview-media-shell"><iframe class="preview-iframe" src="${safeFile}" title="${safeTitle} ${tr("預覽", "Preview")}"></iframe><p class="preview-helper">${tr("此類型可直接在網站內瀏覽內容；若樣式受瀏覽器限制，可改用新分頁開啟。", "This file can be viewed on the site. Open it in a new tab if browser restrictions affect formatting.")}</p></div>`;
     }
     return `<div class="preview-fallback"><div class="preview-fallback-icon">${escapeHtml(getFileType(item))}</div><h3>${tr("此檔案暫不支援站內預覽", "Inline Preview Not Available")}</h3><p>${tr("目前可直接預覽的類型包含 PDF、圖片、HTML 與文字檔。ZIP 或其他封裝檔案請直接下載使用。", "PDFs, images, HTML, and text files can be previewed. Download ZIP or other packaged files directly.")}</p></div>`;
+  };
+
+  const triggerPreviewDreamOpening = () => {
+    if (!elements.detailDialog) return;
+    elements.detailDialog.classList.remove("is-opening");
+    void elements.detailDialog.offsetWidth;
+    window.requestAnimationFrame(() => {
+      elements.detailDialog?.classList.add("is-opening");
+      window.setTimeout(() => elements.detailDialog?.classList.remove("is-opening"), 1400);
+    });
   };
 
   const showDetail = (id) => {
@@ -525,6 +659,7 @@
         </aside>
       </div>`;
     elements.detailDialog.showModal();
+    triggerPreviewDreamOpening();
     void loadDownloadCount(item);
   };
 
@@ -1042,11 +1177,13 @@
 
   elements.searchInput?.addEventListener("input", (event) => {
     state.query = event.target.value;
+    state.manualPageIndex = 0;
     renderManuals();
   });
 
   elements.sortSelect?.addEventListener("change", (event) => {
     state.sort = event.target.value;
+    state.manualPageIndex = 0;
     renderManuals();
   });
 
@@ -1054,11 +1191,30 @@
     const button = event.target.closest("[data-category]");
     if (!button) return;
     state.category = button.dataset.category;
+    state.manualPageIndex = 0;
     renderCategoryFilters();
     renderManuals();
   });
 
   elements.manualGrid?.addEventListener("click", (event) => {
+    const navButton = event.target.closest("[data-manual-nav]");
+    if (navButton) {
+      const visible = getFilteredManuals();
+      if (!visible.length) return;
+      state.manualPageIndex = navButton.dataset.manualNav === "prev"
+        ? (state.manualPageIndex - 1 + visible.length) % visible.length
+        : (state.manualPageIndex + 1) % visible.length;
+      renderManuals();
+      return;
+    }
+
+    const pageButton = event.target.closest("[data-manual-page]");
+    if (pageButton) {
+      state.manualPageIndex = Number(pageButton.dataset.manualPage || 0) || 0;
+      renderManuals();
+      return;
+    }
+
     const detailButton = event.target.closest(".detail-button");
     if (detailButton) showDetail(detailButton.dataset.id);
   });
@@ -1116,6 +1272,7 @@
     state.query = "";
     state.category = "全部";
     state.sort = "updated-desc";
+    state.manualPageIndex = 0;
     if (elements.searchInput) elements.searchInput.value = "";
     if (elements.sortSelect) elements.sortSelect.value = "updated-desc";
     renderCategoryFilters();
@@ -1127,6 +1284,9 @@
   });
 
   elements.dialogClose?.addEventListener("click", () => { clearActivePreviewObjectUrl(); elements.detailDialog.close(); });
+  elements.detailDialog?.addEventListener("close", () => {
+    elements.detailDialog?.classList.remove("is-opening");
+  });
   elements.detailDialog?.addEventListener("click", (event) => {
     if (event.target === elements.detailDialog) { clearActivePreviewObjectUrl(); elements.detailDialog.close(); }
   });
