@@ -1,4 +1,4 @@
-/* 由 admin.html 產生，更新日期：2026/6/27 上午7:42:45 */
+/* 由 admin.html 產生，更新日期：2026/6/27 上午9:49:25 */
 window.SITE_CONFIG = {
   "siteName": "SR+SMC+VWAP 多空雙向教練 v6.6.9",
   "subtitle": "Pine Script Coaching • Strategy • Execution",
@@ -81,7 +81,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 102,
+    "downloadCount": 658,
     "downloadCounterName": "4smc--02-rvol-oi---v2-----mqv5owet"
   },
   {
@@ -106,7 +106,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 106,
+    "downloadCount": 632,
     "downloadCounterName": "sr-smc-v699--k------mqv5ln3u"
   },
   {
@@ -131,7 +131,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 135,
+    "downloadCount": 700,
     "downloadCounterName": "sr-smc-vwap---v669-----mqv5gwu8"
   },
   {
@@ -156,7 +156,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 110,
+    "downloadCount": 672,
     "downloadCounterName": "smc---v669-----mqv4lf4g"
   }
 ];
