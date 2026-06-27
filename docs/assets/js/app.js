@@ -111,14 +111,13 @@
       day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
-      second: "2-digit",
       hour12: false,
       hourCycle: "h23"
     }).formatToParts(date).reduce((acc, part) => {
       if (part.type !== "literal") acc[part.type] = part.value;
       return acc;
     }, {});
-    return `${parts.year}/${parts.month}/${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+    return `${parts.year}/${parts.month}/${parts.day} ${parts.hour}:${parts.minute}`;
   };
 
   const getExtension = (path = "") => {

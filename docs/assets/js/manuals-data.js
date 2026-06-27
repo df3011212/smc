@@ -1,10 +1,12 @@
-/* 由 admin.html 產生，更新日期：2026/6/27 下午9:56:32 */
+/* 由 admin.html 產生，更新日期：2026/6/27 下午11:27:01 */
 window.SITE_CONFIG = {
   "siteName": "SR+SMC+VWAP 多空雙向教練 v6.6.9",
   "subtitle": "Pine Script Coaching • Strategy • Execution",
   "heroLead": "Support Resistance + SMC Coach + VWAP｜集中放置 PDF、Pine Script、ZIP 與教學教材，讓版本更新、下載與查找更清楚。",
   "notice": "本網站供教學與個人研究使用；所有內容免費，不構成投資建議、代操服務或獲利保證。",
   "legalVersion": "2026-06-27",
+  "homeUpdatedAt": "2026-06-27T15:27:01.690Z",
+  "homeUpdatedAtAuto": true,
   "owner": "Threads（@hongshihong19）",
   "siteNameEn": "SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
   "subtitleEn": "Pine Script Coaching • Strategy • Execution",
@@ -62,7 +64,7 @@ window.SITE_CONFIG = {
     "version": "2026-06-v1",
     "title": "腳本更新公告",
     "titleEn": "Important Website Announcement",
-    "content": "2026.06.27  21:37  TradingView 腳本更新 使用者可以安心更新\nhttps://tw.tradingview.com/script/v9sZVYZ9/\n\nV6.6.9 修正\n合併上方／下方最近區域搜尋函數。\n合併多方／空方 FVG 回補更新邏輯。\nOB 搜尋改為共用既有函數，移除重複迴圈。\n保留多區域同步、失效刪除、S/R 合併與 FVG 回補。\n區域外改顯示「距離目前價格最近的一個區域」，不再同時輸出上下兩個區域，以降低 Token。\n已刪除重複的「目前反應區」表格列。\n停損狀態\n© 2026 Threads（@hongshihong19）著作權所有。",
+    "content": "2026.06.27  21:37  TradingView 腳本更新 使用者可以安心更新\nhttps://tw.tradingview.com/script/v9sZVYZ9/\n\n調整更新內容\n標準路徑、快速路徑、反向預案全部共用相同區域引擎。\n同時比較 1H／4H／15M 的支撐、阻力、多空 OB、多空 FVG。\n回踩多方區使用上邊界。\n跌破多方區使用下邊界。\n回抽空方區使用下邊界。\n突破空方區使用上邊界。\n上下目標改為行進方向最近的有效區域邊界。\n方向衝突路徑的第一個反應點，改為真實高週期區域，不再只用 Swing 或 ATR 推估。\nBOS／CHoCH 節點仍使用真實結構價。\n找不到有效區域時，才使用 ATR 備援。\n移除與目前有效區域無關的舊 OB 錨點，避免路徑突然跳到奇怪位置。\n合併上方／下方最近區域搜尋函數。\n合併多方／空方 FVG 回補更新邏輯。\nOB 搜尋改為共用既有函數，移除重複迴圈。\n保留多區域同步、失效刪除、S/R 合併與 FVG 回補。\n區域外改顯示「距離目前價格最近的一個區域」，不再同時輸出上下兩個區域，以降低 Token。\n已刪除重複的「目前反應區」表格列。\n停損狀態\n© 2026 Threads（@hongshihong19）著作權所有。",
     "contentEn": "Welcome to the free SR+SMC+VWAP Long/Short Trading Coach learning-resource website.",
     "buttonLabel": "查看詳情",
     "buttonLabelEn": "View Details",
@@ -95,7 +97,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 1852,
+    "downloadCount": 2012,
     "downloadCounterName": "4smc--02-rvol-oi---v2-----mqv5owet"
   },
   {
@@ -120,7 +122,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 1537,
+    "downloadCount": 2014,
     "downloadCounterName": "sr-smc-v699--k------mqv5ln3u"
   },
   {
@@ -145,7 +147,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 1786,
+    "downloadCount": 2104,
     "downloadCounterName": "sr-smc-vwap---v669-----mqv5gwu8"
   },
   {
@@ -170,7 +172,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 1687,
+    "downloadCount": 2101,
     "downloadCounterName": "smc---v669-----mqv4lf4g"
   }
 ];
@@ -187,9 +189,9 @@ window.ARTICLES = [
     "titleEn": "",
     "summary": "2026.06.27  21:37  TradingView 腳本更新 使用者可以安心更新\nhttps://tw.tradingview.com/script/v9sZVYZ9/\n\nV6.6.9 修正\n合併上方／下方最近區域搜尋函數。\n合併多方／空方 FVG 回補更新邏輯。\nOB 搜尋改為共用既有函數，移除重複迴圈。\n保留多區域同步、失效刪除、S/R 合併與 FVG 回補。\n區域外改顯示「距離目前價格最近的一個區域」，不再同時輸出上下兩個區域，以降低 Token。\n已刪除重複的「目前反應區」表格列。\n停損狀態\n© 2026 Threads（@hongshihong19）著作權所有。",
     "summaryEn": "",
-    "content": "2026.06.27  21:37  TradingView 腳本更新 使用者可以安心更新\nhttps://tw.tradingview.com/script/v9sZVYZ9/\n\nV6.6.9 修正\n合併上方／下方最近區域搜尋函數。\n合併多方／空方 FVG 回補更新邏輯。\nOB 搜尋改為共用既有函數，移除重複迴圈。\n保留多區域同步、失效刪除、S/R 合併與 FVG 回補。\n區域外改顯示「距離目前價格最近的一個區域」，不再同時輸出上下兩個區域，以降低 Token。\n已刪除重複的「目前反應區」表格列。\n停損狀態\n© 2026 Threads（@hongshihong19）著作權所有。",
+    "content": "調整更新內容\n標準路徑、快速路徑、反向預案全部共用相同區域引擎。\n同時比較 1H／4H／15M 的支撐、阻力、多空 OB、多空 FVG。\n回踩多方區使用上邊界。\n跌破多方區使用下邊界。\n回抽空方區使用下邊界。\n突破空方區使用上邊界。\n上下目標改為行進方向最近的有效區域邊界。\n方向衝突路徑的第一個反應點，改為真實高週期區域，不再只用 Swing 或 ATR 推估。\nBOS／CHoCH 節點仍使用真實結構價。\n找不到有效區域時，才使用 ATR 備援。\n移除與目前有效區域無關的舊 OB 錨點，避免路徑突然跳到奇怪位置。\n合併上方／下方最近區域搜尋函數。\n合併多方／空方 FVG 回補更新邏輯。\nOB 搜尋改為共用既有函數，移除重複迴圈。\n保留多區域同步、失效刪除、S/R 合併與 FVG 回補。\n區域外改顯示「距離目前價格最近的一個區域」，不再同時輸出上下兩個區域，以降低 Token。\n已刪除重複的「目前反應區」表格列。\n停損狀態\n© 2026 Threads（@hongshihong19）著作權所有。\n\n",
     "contentEn": "",
-    "coverImage": "assets/uploads/articles/公告-sr-smc-vwap-多空雙向教練-cover-20260627134154-velmq.webp",
+    "coverImage": "assets/uploads/articles/公告-sr-smc-vwap-多空雙向教練-cover-20260627142054-iv91p.webp",
     "coverAlt": "[公告]SR+SMC+VWAP 多空雙向教練 許願成立🎊",
     "enabled": true,
     "featured": true
