@@ -1,4 +1,4 @@
-/* 由 admin.html 產生，更新日期：2026/6/27 上午11:19:14 */
+/* 由 admin.html 產生，更新日期：2026/6/27 下午9:56:32 */
 window.SITE_CONFIG = {
   "siteName": "SR+SMC+VWAP 多空雙向教練 v6.6.9",
   "subtitle": "Pine Script Coaching • Strategy • Execution",
@@ -30,7 +30,7 @@ window.SITE_CONFIG = {
   "donations": [
     {
       "id": "ko-fi",
-      "label": "Patreon 訂閱贊助",
+      "label": "打賞／patreon訂閱贊助",
       "icon": "☕",
       "url": "https://www.patreon.com/cw/hongshihong19_SMC",
       "enabled": true
@@ -58,16 +58,16 @@ window.SITE_CONFIG = {
   },
   "announcement": {
     "enabled": true,
-    "mode": "once-version",
+    "mode": "once-session",
     "version": "2026-06-v1",
-    "title": "公告",
+    "title": "腳本更新公告",
     "titleEn": "Important Website Announcement",
-    "content": "歡迎使用 SR+SMC+VWAP 多空雙向教練免費教學資源網站。\n1.[公告]SR+SMC+VWAP 多空雙向教練 許願成立🎊\n2.贊助教學影片已提供。",
+    "content": "2026.06.27  21:37  TradingView 腳本更新 使用者可以安心更新\nhttps://tw.tradingview.com/script/v9sZVYZ9/\n\nV6.6.9 修正\n合併上方／下方最近區域搜尋函數。\n合併多方／空方 FVG 回補更新邏輯。\nOB 搜尋改為共用既有函數，移除重複迴圈。\n保留多區域同步、失效刪除、S/R 合併與 FVG 回補。\n區域外改顯示「距離目前價格最近的一個區域」，不再同時輸出上下兩個區域，以降低 Token。\n已刪除重複的「目前反應區」表格列。\n停損狀態\n© 2026 Threads（@hongshihong19）著作權所有。",
     "contentEn": "Welcome to the free SR+SMC+VWAP Long/Short Trading Coach learning-resource website.",
     "buttonLabel": "查看詳情",
     "buttonLabelEn": "View Details",
     "url": "articles.html",
-    "image": "",
+    "image": "assets/uploads/articles/2026-06-v1-announcement-20260627133750-28myv.webp",
     "imageAlt": "網站重要公告"
   }
 };
@@ -95,7 +95,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 658,
+    "downloadCount": 1852,
     "downloadCounterName": "4smc--02-rvol-oi---v2-----mqv5owet"
   },
   {
@@ -120,7 +120,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 632,
+    "downloadCount": 1537,
     "downloadCounterName": "sr-smc-v699--k------mqv5ln3u"
   },
   {
@@ -145,7 +145,7 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 700,
+    "downloadCount": 1786,
     "downloadCounterName": "sr-smc-vwap---v669-----mqv5gwu8"
   },
   {
@@ -170,26 +170,26 @@ window.MANUALS = [
     "sourceUrl": "",
     "featured": true,
     "isNew": true,
-    "downloadCount": 672,
+    "downloadCount": 1687,
     "downloadCounterName": "smc---v669-----mqv4lf4g"
   }
 ];
 
 window.ARTICLES = [
   {
-    "id": "公告-sr-smc-vwap-多空雙向教練-許願成立",
-    "type": "embed",
-    "typeLabel": "Threads 貼文嵌入",
-    "category": "最新消息",
+    "id": "公告-sr-smc-vwap-多空雙向教練",
+    "type": "text",
+    "typeLabel": "一般文章（純文字）",
+    "category": "腳本更新",
     "categoryEn": "",
-    "publishedAt": "2026-06-26",
-    "title": "[公告]SR+SMC+VWAP 多空雙向教練 許願成立🎊",
+    "publishedAt": "2026-06-27",
+    "title": "[公告]SR+SMC+VWAP 多空雙向教練",
     "titleEn": "",
-    "summary": "",
+    "summary": "2026.06.27  21:37  TradingView 腳本更新 使用者可以安心更新\nhttps://tw.tradingview.com/script/v9sZVYZ9/\n\nV6.6.9 修正\n合併上方／下方最近區域搜尋函數。\n合併多方／空方 FVG 回補更新邏輯。\nOB 搜尋改為共用既有函數，移除重複迴圈。\n保留多區域同步、失效刪除、S/R 合併與 FVG 回補。\n區域外改顯示「距離目前價格最近的一個區域」，不再同時輸出上下兩個區域，以降低 Token。\n已刪除重複的「目前反應區」表格列。\n停損狀態\n© 2026 Threads（@hongshihong19）著作權所有。",
     "summaryEn": "",
-    "content": "\n<blockquote class=\"text-post-media\" data-text-post-permalink=\"https://www.threads.com/@hongshihong19/post/DaDxXI1n8oA?xmt=AQG0KHS54y7s7LfpEFDCtymBrbomEsDnkxzAa8JrNOkE7g\" data-text-post-version=\"0\" id=\"sr-thread-DaDxXI1n8oA-1782512710837\" style=\"background:#fff;border:1px solid #00000026;border-radius:16px;max-width:650px;margin:1px auto;min-width:270px;padding:0;width:calc(100% - 2px)\"><a href=\"https://www.threads.com/@hongshihong19/post/DaDxXI1n8oA?xmt=AQG0KHS54y7s7LfpEFDCtymBrbomEsDnkxzAa8JrNOkE7g\" style=\"background:#fff;display:block;padding:36px 24px;text-align:center;text-decoration:none;color:#111;font:600 15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif\" target=\"_blank\" rel=\"noopener noreferrer\"><div style=\"font-size:32px;line-height:1;margin-bottom:12px\">◎</div><div>在 Threads 查看</div></a></blockquote>\n\n贊助會員\nhttps://www.patreon.com/cw/hongshihong19_SMC?vanity=hongshihong19_SMC",
+    "content": "2026.06.27  21:37  TradingView 腳本更新 使用者可以安心更新\nhttps://tw.tradingview.com/script/v9sZVYZ9/\n\nV6.6.9 修正\n合併上方／下方最近區域搜尋函數。\n合併多方／空方 FVG 回補更新邏輯。\nOB 搜尋改為共用既有函數，移除重複迴圈。\n保留多區域同步、失效刪除、S/R 合併與 FVG 回補。\n區域外改顯示「距離目前價格最近的一個區域」，不再同時輸出上下兩個區域，以降低 Token。\n已刪除重複的「目前反應區」表格列。\n停損狀態\n© 2026 Threads（@hongshihong19）著作權所有。",
     "contentEn": "",
-    "coverImage": "",
+    "coverImage": "assets/uploads/articles/公告-sr-smc-vwap-多空雙向教練-cover-20260627134154-velmq.webp",
     "coverAlt": "[公告]SR+SMC+VWAP 多空雙向教練 許願成立🎊",
     "enabled": true,
     "featured": true

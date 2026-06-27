@@ -101,6 +101,26 @@
     }).format(date);
   };
 
+  const formatHomepageUpdatedAt = (value) => {
+    const date = value ? new Date(value) : null;
+    if (!date || Number.isNaN(date.getTime())) return "";
+    const parts = new Intl.DateTimeFormat("zh-TW", {
+      timeZone: "Asia/Taipei",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+      hourCycle: "h23"
+    }).formatToParts(date).reduce((acc, part) => {
+      if (part.type !== "literal") acc[part.type] = part.value;
+      return acc;
+    }, {});
+    return `${parts.year}/${parts.month}/${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+  };
+
   const getExtension = (path = "") => {
     const clean = path.split("?")[0].split("#")[0];
     const part = clean.includes(".") ? clean.split(".").pop() : "FILE";
@@ -249,9 +269,19 @@
     if (elements.manualCount) elements.manualCount.textContent = manuals.length;
     if (elements.categoryCount) elements.categoryCount.textContent = categories.length;
     if (elements.latestDate) {
-      elements.latestDate.textContent = dates[0]
-        ? new Intl.DateTimeFormat(isEnglish ? "en-US" : "zh-TW", { month: "2-digit", day: "2-digit" }).format(dates[0])
-        : "—";
+      const configured = formatHomepageUpdatedAt(config.homeUpdatedAt);
+      if (configured) {
+        elements.latestDate.textContent = configured;
+        elements.latestDate.title = tr("首頁更新時間（台灣時間）", "Homepage updated time (Taipei time)");
+      } else if (dates[0]) {
+        elements.latestDate.textContent = new Intl.DateTimeFormat(isEnglish ? "en-US" : "zh-TW", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }).format(dates[0]);
+      } else {
+        elements.latestDate.textContent = "—";
+      }
     }
   };
 

@@ -41,6 +41,7 @@
   "份手冊與檔案": "manuals and files",
   "個內容分類": "content categories",
   "最近更新日期": "latest update",
+  "最近更新時間": "latest update time",
   "精選手冊投影輪播": "Featured Manual Slideshow",
   "完整使用教學手冊｜主教練手冊": "Complete User Guide | Main Coach Manual",
   "實戰 K 棒情境教學手冊": "Practical Candlestick Scenario Manual",

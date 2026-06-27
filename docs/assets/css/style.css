@@ -309,6 +309,13 @@ code {
   font-weight: 900;
   line-height: 1;
 }
+#latestDate {
+  font-size: clamp(1.02rem, 1.8vw, 1.42rem);
+  line-height: 1.3;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
 .stat-card small {
   display: block;
   margin-top: 8px;
@@ -2052,7 +2059,7 @@ code {
 .article-embed-frame.is-threads-embed{min-height:240px;background:transparent}
 
 
-/* v8.1.17｜首頁教學影片按鈕與頁內彈窗播放器 */
+/* v8.1.18｜首頁教學影片按鈕與頁內彈窗播放器 */
 .button-video{background:linear-gradient(135deg,#5b6cf9,#7b4fd8);border-color:transparent;color:#fff;box-shadow:0 10px 24px rgba(91,108,249,.24)}
 .button-video:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(91,108,249,.32)}
 .button-video:focus-visible{outline:3px solid rgba(91,108,249,.3);outline-offset:3px}
@@ -2066,3 +2073,7 @@ code {
 .homepage-video-frame{display:flex;justify-content:center;align-items:center;min-height:240px;padding:12px;border-radius:20px;background:#05070c;overflow:hidden}
 .homepage-video-frame video{display:block;width:auto;max-width:100%;height:auto;max-height:68vh;border-radius:12px;background:#000}
 @media (max-width:620px){.homepage-video-dialog-shell{padding:18px}.homepage-video-frame{min-height:180px;padding:8px}.homepage-video-frame video{max-height:62vh}.homepage-video-heading{padding-right:44px}}
+
+@media (max-width: 520px) {
+  #latestDate { white-space: normal; font-size: 1rem; }
+}
