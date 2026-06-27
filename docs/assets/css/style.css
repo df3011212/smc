@@ -2077,3 +2077,62 @@ code {
 .homepage-video-frame video{display:block;width:auto;max-width:100%;height:auto;max-height:68vh;border-radius:12px;background:#000}
 @media (max-width:620px){.homepage-video-dialog-shell{padding:18px}.homepage-video-frame{min-height:180px;padding:8px}.homepage-video-frame video{max-height:62vh}.homepage-video-heading{padding-right:44px}}
 
+
+
+/* v8.1.21｜首頁訂閱目標進度 */
+.subscription-progress-card {
+  grid-column: 1 / -1;
+}
+.subscription-progress-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+}
+.subscription-progress-heading small {
+  margin-top: 0;
+}
+.subscription-progress-heading strong {
+  display: block;
+  margin-top: 8px;
+  font-size: clamp(1.55rem, 3vw, 2.15rem);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.stat-card .subscription-progress-percent {
+  display: block;
+  flex: 0 0 auto;
+  font-size: clamp(1.35rem, 2.5vw, 1.9rem);
+  line-height: 1;
+  font-weight: 900;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+.subscription-progress-track {
+  position: relative;
+  width: 100%;
+  height: 14px;
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line) 84%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-soft) 88%, var(--line));
+}
+.subscription-progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--gold), var(--teal));
+  transition: width .35s ease;
+}
+.subscription-progress-note {
+  margin-top: 10px !important;
+}
+@media (max-width: 560px) {
+  .subscription-progress-heading {
+    align-items: flex-start;
+  }
+  .stat-card .subscription-progress-percent {
+    font-size: 1.35rem;
+  }
+}

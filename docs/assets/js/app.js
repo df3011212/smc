@@ -28,6 +28,11 @@
     manualCount: document.querySelector("#manualCount"),
     categoryCount: document.querySelector("#categoryCount"),
     latestDate: document.querySelector("#latestDate"),
+    subscriptionProgressCard: document.querySelector("#subscriptionProgressCard"),
+    subscriptionProgressValue: document.querySelector("#subscriptionProgressValue"),
+    subscriptionProgressPercent: document.querySelector("#subscriptionProgressPercent"),
+    subscriptionProgressTrack: document.querySelector("#subscriptionProgressTrack"),
+    subscriptionProgressFill: document.querySelector("#subscriptionProgressFill"),
     searchInput: document.querySelector("#searchInput"),
     sortSelect: document.querySelector("#sortSelect"),
     categoryFilters: document.querySelector("#categoryFilters"),
@@ -127,6 +132,21 @@
   };
 
   const getCategories = () => [...new Set(manuals.map(item => item.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, "zh-Hant"));
+
+  const getSubscriptionProgress = () => {
+    const source = config.subscriptionProgress || {};
+    const rawCurrent = Number(source.current);
+    const rawTarget = Number(source.target);
+    const current = Number.isFinite(rawCurrent) ? Math.max(0, Math.trunc(rawCurrent)) : 0;
+    const target = Number.isFinite(rawTarget) ? Math.max(1, Math.trunc(rawTarget)) : 300;
+    const percent = Math.min(100, Math.max(0, (current / target) * 100));
+    return { current, target, percent };
+  };
+
+  const formatSubscriptionPercent = (value) => {
+    const rounded = Math.round((Number(value) || 0) * 10) / 10;
+    return `${Number.isInteger(rounded) ? rounded.toFixed(0) : rounded.toFixed(1)}%`;
+  };
 
   const previewKinds = {
     pdf: ["PDF"],
@@ -281,6 +301,18 @@
       } else {
         elements.latestDate.textContent = "—";
       }
+    }
+
+    const subscription = getSubscriptionProgress();
+    const formattedCurrent = new Intl.NumberFormat(isEnglish ? "en-US" : "zh-TW").format(subscription.current);
+    const formattedTarget = new Intl.NumberFormat(isEnglish ? "en-US" : "zh-TW").format(subscription.target);
+    const percentText = formatSubscriptionPercent(subscription.percent);
+    if (elements.subscriptionProgressValue) elements.subscriptionProgressValue.textContent = `${formattedCurrent} / ${formattedTarget}`;
+    if (elements.subscriptionProgressPercent) elements.subscriptionProgressPercent.textContent = percentText;
+    if (elements.subscriptionProgressFill) elements.subscriptionProgressFill.style.width = `${subscription.percent}%`;
+    if (elements.subscriptionProgressTrack) {
+      elements.subscriptionProgressTrack.setAttribute("aria-valuenow", String(Math.round(subscription.percent * 10) / 10));
+      elements.subscriptionProgressTrack.setAttribute("aria-valuetext", `${formattedCurrent} / ${formattedTarget}，${percentText}`);
     }
   };
 
