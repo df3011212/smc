@@ -2050,3 +2050,19 @@ code {
 
 /* v8.1.15：Threads 官方嵌入自動高度 */
 .article-embed-frame.is-threads-embed{min-height:240px;background:transparent}
+
+
+/* v8.1.17｜首頁教學影片按鈕與頁內彈窗播放器 */
+.button-video{background:linear-gradient(135deg,#5b6cf9,#7b4fd8);border-color:transparent;color:#fff;box-shadow:0 10px 24px rgba(91,108,249,.24)}
+.button-video:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(91,108,249,.32)}
+.button-video:focus-visible{outline:3px solid rgba(91,108,249,.3);outline-offset:3px}
+.homepage-video-dialog{width:min(760px,calc(100vw - 28px));max-height:92vh;padding:0;border:0;border-radius:26px;background:transparent;color:var(--text);overflow:visible}
+.homepage-video-dialog::backdrop{background:rgba(7,12,24,.74);backdrop-filter:blur(5px)}
+.homepage-video-dialog-shell{position:relative;max-height:92vh;overflow:auto;padding:26px;border:1px solid var(--line);border-radius:26px;background:var(--surface);box-shadow:0 32px 90px rgba(6,12,24,.34)}
+.homepage-video-close{position:absolute;top:14px;right:14px;z-index:2;background:var(--surface-soft)}
+.homepage-video-heading{padding-right:52px;margin-bottom:18px}
+.homepage-video-heading h2{margin:6px 0 8px;font-size:clamp(1.35rem,3vw,2rem)}
+.homepage-video-heading p{margin:0;color:var(--muted);line-height:1.75}
+.homepage-video-frame{display:flex;justify-content:center;align-items:center;min-height:240px;padding:12px;border-radius:20px;background:#05070c;overflow:hidden}
+.homepage-video-frame video{display:block;width:auto;max-width:100%;height:auto;max-height:68vh;border-radius:12px;background:#000}
+@media (max-width:620px){.homepage-video-dialog-shell{padding:18px}.homepage-video-frame{min-height:180px;padding:8px}.homepage-video-frame video{max-height:62vh}.homepage-video-heading{padding-right:44px}}

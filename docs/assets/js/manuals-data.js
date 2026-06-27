@@ -1,4 +1,4 @@
-/* 由 admin.html 產生，更新日期：2026/6/27 上午9:49:25 */
+/* 由 admin.html 產生，更新日期：2026/6/27 上午11:19:14 */
 window.SITE_CONFIG = {
   "siteName": "SR+SMC+VWAP 多空雙向教練 v6.6.9",
   "subtitle": "Pine Script Coaching • Strategy • Execution",
@@ -30,9 +30,23 @@ window.SITE_CONFIG = {
   "donations": [
     {
       "id": "ko-fi",
-      "label": "打賞／patreon訂閱贊助 (IOS/Android) 也可訂閱",
+      "label": "Patreon 訂閱贊助",
       "icon": "☕",
       "url": "https://www.patreon.com/cw/hongshihong19_SMC",
+      "enabled": true
+    }
+  ],
+  "videos": [
+    {
+      "id": "patreon-subscription-tutorial",
+      "label": "Patreon 訂閱教學影片",
+      "labelEn": "Patreon Subscription Tutorial",
+      "icon": "▶",
+      "title": "Patreon 訂閱贊助教學",
+      "titleEn": "Patreon Subscription Tutorial",
+      "description": "點擊播放訂閱與贊助操作教學。影片會在目前頁面的彈出視窗中播放。",
+      "descriptionEn": "Watch the Patreon subscription and support tutorial in an on-page dialog.",
+      "src": "assets/uploads/videos/patreon-subscription-tutorial.mp4",
       "enabled": true
     }
   ],
@@ -46,9 +60,9 @@ window.SITE_CONFIG = {
     "enabled": true,
     "mode": "once-version",
     "version": "2026-06-v1",
-    "title": "網站重要公告",
+    "title": "公告",
     "titleEn": "Important Website Announcement",
-    "content": "歡迎使用 SR+SMC+VWAP 多空雙向教練免費教學資源網站。\n[公告]SR+SMC+VWAP 多空雙向教練 許願成立🎊",
+    "content": "歡迎使用 SR+SMC+VWAP 多空雙向教練免費教學資源網站。\n1.[公告]SR+SMC+VWAP 多空雙向教練 許願成立🎊\n2.贊助教學影片已提供。",
     "contentEn": "Welcome to the free SR+SMC+VWAP Long/Short Trading Coach learning-resource website.",
     "buttonLabel": "查看詳情",
     "buttonLabelEn": "View Details",

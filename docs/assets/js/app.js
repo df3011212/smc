@@ -50,7 +50,12 @@
     heroDots: Array.from(document.querySelectorAll(".hero-dot")),
     heroPrev: document.querySelector("#heroPrev"),
     heroNext: document.querySelector("#heroNext"),
-    donationButtons: document.querySelector("#donationButtons")
+    donationButtons: document.querySelector("#donationButtons"),
+    videoDialog: document.querySelector("#videoDialog"),
+    videoDialogClose: document.querySelector("#videoDialogClose"),
+    videoDialogTitle: document.querySelector("#videoDialogTitle"),
+    videoDialogDescription: document.querySelector("#videoDialogDescription"),
+    homepageVideoPlayer: document.querySelector("#homepageVideoPlayer")
   };
 
   const state = {
@@ -123,6 +128,21 @@
     { id: "ko-fi", label: "打賞／贊助", icon: "☕", url: "https://ko-fi.com/hungshiihhungsmc", enabled: true }
   ];
 
+  const DEFAULT_HOME_VIDEOS = [
+    {
+      id: "patreon-subscription-tutorial",
+      label: "Patreon 訂閱教學影片",
+      labelEn: "Patreon Subscription Tutorial",
+      icon: "▶",
+      title: "Patreon 訂閱贊助教學",
+      titleEn: "Patreon Subscription Tutorial",
+      description: "點擊播放訂閱與贊助操作教學。影片會在目前頁面的彈出視窗中播放。",
+      descriptionEn: "Watch the Patreon subscription and support tutorial in an on-page dialog.",
+      src: "assets/uploads/videos/patreon-subscription-tutorial.mp4",
+      enabled: true
+    }
+  ];
+
   const getPublicDonationLinks = () => {
     const source = Array.isArray(config.donations) ? config.donations : DEFAULT_DONATION_LINKS;
     return source
@@ -140,15 +160,66 @@
       .slice(0, 12);
   };
 
+  const normalizePublicVideo = (item = {}, index = 0) => ({
+    id: String(item.id || `video-${index + 1}`),
+    label: String((isEnglish ? item.labelEn : item.label) || item.label || tr(`教學影片 ${index + 1}`, `Tutorial Video ${index + 1}`)).trim(),
+    icon: String(item.icon || "▶").trim().slice(0, 4),
+    title: String((isEnglish ? item.titleEn : item.title) || item.title || item.label || tr("教學影片", "Tutorial Video")).trim(),
+    description: String((isEnglish ? item.descriptionEn : item.description) || item.description || "").trim(),
+    src: String(item.src || "").trim(),
+    enabled: item.enabled !== false,
+  });
+
+  const isSafeVideoSource = (value = "") => {
+    try {
+      const parsed = new URL(value, window.location.href);
+      return ["http:", "https:"].includes(parsed.protocol) && /\.(mp4|webm|ogg)(?:$|[?#])/i.test(parsed.pathname + parsed.search + parsed.hash);
+    } catch { return false; }
+  };
+
+  const getPublicHomeVideos = () => {
+    const source = Array.isArray(config.videos) ? config.videos : DEFAULT_HOME_VIDEOS;
+    return source.map(normalizePublicVideo).filter(item => item.enabled && item.label && isSafeVideoSource(item.src)).slice(0, 8);
+  };
+
   const renderDonationButtons = () => {
     if (!elements.donationButtons) return;
     const links = getPublicDonationLinks();
-    elements.donationButtons.hidden = links.length === 0;
-    elements.donationButtons.innerHTML = links.map(item => `
+    const videos = getPublicHomeVideos();
+    elements.donationButtons.hidden = links.length === 0 && videos.length === 0;
+    const donationHtml = links.map(item => `
       <a class="button button-support donation-header-button" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(tr("開啟", "Open"))} ${escapeHtml(item.label)}">
         <span aria-hidden="true">${escapeHtml(item.icon || "❤")}</span>
         <span>${escapeHtml(item.label)}</span>
       </a>`).join("");
+    const videoHtml = videos.map(item => `
+      <button class="button button-video donation-header-button video-launch-button" type="button" data-video-id="${escapeHtml(item.id)}" aria-label="${escapeHtml(tr("播放", "Play"))} ${escapeHtml(item.label)}">
+        <span aria-hidden="true">${escapeHtml(item.icon || "▶")}</span>
+        <span>${escapeHtml(item.label)}</span>
+      </button>`).join("");
+    elements.donationButtons.innerHTML = donationHtml + videoHtml;
+  };
+
+  const closeHomepageVideo = () => {
+    const player = elements.homepageVideoPlayer;
+    if (player) {
+      player.pause();
+      player.removeAttribute("src");
+      player.load();
+    }
+    if (elements.videoDialog?.open) elements.videoDialog.close();
+  };
+
+  const openHomepageVideo = (videoId) => {
+    const video = getPublicHomeVideos().find(item => item.id === videoId);
+    if (!video || !elements.videoDialog || !elements.homepageVideoPlayer) return;
+    elements.videoDialogTitle.textContent = video.title || video.label;
+    elements.videoDialogDescription.textContent = video.description || "";
+    elements.videoDialogDescription.hidden = !video.description;
+    elements.homepageVideoPlayer.src = new URL(video.src, window.location.href).href;
+    elements.videoDialog.showModal();
+    elements.homepageVideoPlayer.load();
+    elements.homepageVideoPlayer.play().catch(() => {});
   };
 
   const setSiteConfig = () => {
@@ -932,6 +1003,13 @@
   });
 
   document.addEventListener("click", (event) => {
+    const videoButton = event.target.closest(".video-launch-button");
+    if (videoButton) {
+      event.preventDefault();
+      openHomepageVideo(videoButton.dataset.videoId || "");
+      return;
+    }
+
     const downloadButton = event.target.closest(".download-button");
     if (downloadButton) {
       event.preventDefault();
@@ -990,6 +1068,19 @@
   elements.dialogClose?.addEventListener("click", () => { clearActivePreviewObjectUrl(); elements.detailDialog.close(); });
   elements.detailDialog?.addEventListener("click", (event) => {
     if (event.target === elements.detailDialog) { clearActivePreviewObjectUrl(); elements.detailDialog.close(); }
+  });
+
+  elements.videoDialogClose?.addEventListener("click", closeHomepageVideo);
+  elements.videoDialog?.addEventListener("click", (event) => {
+    if (event.target === elements.videoDialog) closeHomepageVideo();
+  });
+  elements.videoDialog?.addEventListener("close", () => {
+    const player = elements.homepageVideoPlayer;
+    if (player?.getAttribute("src")) {
+      player.pause();
+      player.removeAttribute("src");
+      player.load();
+    }
   });
 
   setSiteConfig();
