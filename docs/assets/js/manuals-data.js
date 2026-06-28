@@ -1,10 +1,12 @@
-/* 安全同步工具自動合併：保留本機網站設定及較完整的手冊／文章資料 */
+/* 由 admin.html 產生，更新日期：2026/6/28 上午11:12:08 */
 window.SITE_CONFIG = {
   "siteName": "SR+SMC+VWAP 多空雙向教練 v6.6.9",
   "subtitle": "Pine Script Coaching • Strategy • Execution",
   "heroLead": "Support Resistance + SMC Coach + VWAP｜集中放置 PDF、Pine Script、ZIP 與教學教材，讓版本更新、下載與查找更清楚。",
   "notice": "本網站供教學與個人研究使用；所有內容免費，不構成投資建議、代操服務或獲利保證。",
   "legalVersion": "2026-06-27",
+  "homeUpdatedAt": "2026-06-28T03:12:08.129Z",
+  "homeUpdatedAtAuto": true,
   "owner": "Threads（@hongshihong19）",
   "siteNameEn": "SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
   "subtitleEn": "Pine Script Coaching • Strategy • Execution",
@@ -64,15 +66,37 @@ window.SITE_CONFIG = {
     "enabled": true,
     "mode": "once-session",
     "version": "2026-06-v1",
-    "title": "腳本更新公告",
+    "title": "腳本維護公告",
     "titleEn": "Important Website Announcement",
-    "content": "2026.06.27  21:37  TradingView 腳本更新 使用者可以安心更新\nhttps://tw.tradingview.com/script/v9sZVYZ9/\n\n調整更新內容\n標準路徑、快速路徑、反向預案全部共用相同區域引擎。\n同時比較 1H／4H／15M 的支撐、阻力、多空 OB、多空 FVG。\n回踩多方區使用上邊界。\n跌破多方區使用下邊界。\n回抽空方區使用下邊界。\n突破空方區使用上邊界。\n上下目標改為行進方向最近的有效區域邊界。\n方向衝突路徑的第一個反應點，改為真實高週期區域，不再只用 Swing 或 ATR 推估。\nBOS／CHoCH 節點仍使用真實結構價。\n找不到有效區域時，才使用 ATR 備援。\n移除與目前有效區域無關的舊 OB 錨點，避免路徑突然跳到奇怪位置。\n合併上方／下方最近區域搜尋函數。\n合併多方／空方 FVG 回補更新邏輯。\nOB 搜尋改為共用既有函數，移除重複迴圈。\n保留多區域同步、失效刪除、S/R 合併與 FVG 回補。\n區域外改顯示「距離目前價格最近的一個區域」，不再同時輸出上下兩個區域，以降低 Token。\n已刪除重複的「目前反應區」表格列。\n停損狀態\n© 2026 Threads（@hongshihong19）著作權所有。",
+    "content": "腳本正在更新中",
     "contentEn": "Welcome to the free SR+SMC+VWAP Long/Short Trading Coach learning-resource website.",
     "buttonLabel": "查看詳情",
     "buttonLabelEn": "View Details",
     "url": "articles.html",
-    "image": "assets/uploads/articles/2026-06-v1-announcement-20260627133750-28myv.webp",
-    "imageAlt": "網站重要公告"
+    "image": "assets/uploads/articles/2026-06-v1-announcement-20260628031154-i70zt.webp",
+    "imageAlt": "腳本維護公告"
+  },
+  "officialLinks": {
+    "eyebrow": "Featured Links",
+    "title": "SMC 組合02副圖｜RVOL 與 OI｜作者 Threads",
+    "main": {
+      "enabled": true,
+      "kicker": "TradingView 主圖",
+      "title": "SR＋SMC＋VWAP 多空雙向教練 v6.6.9",
+      "url": "https://tw.tradingview.com/script/v9sZVYZ9/"
+    },
+    "rvol": {
+      "enabled": true,
+      "kicker": "SMC 組合02副圖",
+      "title": "RVOL + Open Interest 副圖教練 v2",
+      "url": "https://tw.tradingview.com/script/s1XifCPs/"
+    },
+    "threads": {
+      "enabled": true,
+      "kicker": "作者 Threads",
+      "title": "Threads（@hongshihong19）",
+      "url": "https://www.threads.com/@hongshihong19"
+    }
   }
 };
 
