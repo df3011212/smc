@@ -1,0 +1,991 @@
+//@version=6
+// ============================================================================
+// Close 歷史線型相似度驗證器
+// 公開版本：v1.2.2
+//
+// 作者／著作權人：Threads(@hongshihong19)
+// © 2026 Threads(@hongshihong19) 著作權所有。
+//
+// 本 Pine Script® 原始碼依 Mozilla Public License 2.0 授權公開使用：
+// https://mozilla.org/MPL/2.0/
+//
+// 使用、修改或再發布本程式時，必須保留：
+// 1. 本授權聲明。
+// 2. 原作者 Threads(@hongshihong19) 的署名。
+// 3. 原始著作權聲明。
+//
+// 禁止移除原作者署名、冒用原作者身分，或將修改版本宣稱為原作者官方版本。
+// 本指標僅供資訊整理、技術研究與交易流程訓練，不構成投資建議，亦不保證獲利。
+//
+// 檔案編碼：UTF-8。為避免跨平台或 PDF 輸出亂碼，本版模組署名僅使用一般中文、
+// 英文字母、數字與標準標點，不使用隨機特殊符號或裝飾字元。
+// ============================================================================
+//
+// 版本：v1.2.2｜Threads(@hongshihong19)｜版權所有
+// 更新說明：加入正式作者署名與 MPL 2.0 授權版頭；統一 UTF-8 中文註解格式；
+//           保留 Close 歷史相似度、重疊比對、前三名樣本與目前右側後續投影功能。
+
+indicator(
+    "Close 歷史線型相似度驗證器 v1.2.2｜Threads(@hongshihong19) [哥哥版]",
+    shorttitle = "Close 線型相似度 v1.2.2",
+    overlay = true,
+    max_boxes_count = 10,
+    max_labels_count = 10,
+    max_lines_count = 500
+)
+
+// max_bars_back() 的 num 參數在 Pine v6 只能設定 0～5000。
+// 本版明確配置 5000 根，並將所有動態歷史索引限制在 0～4999，
+// 避免 CE10041 與後續歷史引用越界錯誤。
+max_bars_back(close, 5000)
+max_bars_back(time, 5000)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// [HS19] © 2026 Threads(@hongshihong19)｜模組：使用者設定
+// 使用者設定
+// ─────────────────────────────────────────────────────────────────────────────
+const string GROUP_REFERENCE = "一、目前 Close 線型參考區域"
+const string GROUP_SEARCH = "二、歷史搜尋與相似度"
+const string GROUP_VALIDATION = "三、歷史驗證"
+const string GROUP_DISPLAY = "四、圖表與面板"
+
+int patternLength = input.int(
+    48,
+    "目前線型比對長度",
+    minval = 12,
+    maxval = 120,
+    tooltip = "正常模式使用 close[比對長度] 到 close[1]。48 根 15 分鐘 K 棒代表最近 12 小時。",
+    group = GROUP_REFERENCE
+)
+
+int historySearchBars = input.int(
+    5000,
+    "歷史搜尋根數",
+    minval = 500,
+    maxval = 5000,
+    tooltip = "從參考終點往更早的歷史資料搜尋。Pine 的 max_bars_back() 上限為 5000，因此本版最大設定為 5000；實際可用深度還會扣除比對長度與驗證位移。",
+    group = GROUP_SEARCH
+)
+
+int candidateStep = input.int(
+    4,
+    "歷史候選間隔",
+    minval = 1,
+    maxval = 20,
+    tooltip = "設定為 4 時，每隔 4 根歷史 K 棒建立一組候選區域，可降低運算量。",
+    group = GROUP_SEARCH
+)
+
+int isolationBars = input.int(
+    16,
+    "目前區域隔離根數",
+    minval = 1,
+    maxval = 100,
+    tooltip = "歷史候選的後續驗證區域與目前參考區域之間，至少保留此數量的 K 棒。",
+    group = GROUP_SEARCH
+)
+
+int futureValidationBars = input.int(
+    16,
+    "歷史後續驗證根數",
+    minval = 1,
+    maxval = 100,
+    tooltip = "計算歷史候選完成後第 N 根的實際報酬。此資料只供驗證，不參與相似度計算。",
+    group = GROUP_VALIDATION
+)
+
+float minimumSimilarity = input.float(
+    55.0,
+    "最低顯示相似度",
+    minval = 0.0,
+    maxval = 100.0,
+    step = 0.1,
+    tooltip = "最終相似度低於此門檻的候選不會進入排名或顯示。",
+    group = GROUP_SEARCH
+)
+
+int displayCount = input.int(
+    3,
+    "顯示前幾名",
+    minval = 1,
+    maxval = 3,
+    tooltip = "顯示相似度最高且彼此不重疊的前 1～3 組歷史區域。",
+    group = GROUP_DISPLAY
+)
+
+int validationOffset = input.int(
+    0,
+    "歷史驗證位移",
+    minval = 0,
+    maxval = 1000,
+    tooltip = "0：正式終點為 close[1]。100：把 close[101] 視為模擬當時最新一根已收盤 K 棒。",
+    group = GROUP_VALIDATION
+)
+
+int historicalFutureDisplayBars = input.int(
+    100,
+    "歷史後續顯示根數",
+    minval = 10,
+    maxval = 200,
+    tooltip = "把每組歷史相似樣本完成後已實際發生的 Close 路徑，投影到目前參考區域右側。預設顯示約 100 根。",
+    group = GROUP_VALIDATION
+)
+
+string panelTimezone = input.string(
+    "Asia/Taipei",
+    "面板時間時區",
+    options = [
+        "Asia/Taipei",
+        "Etc/UTC",
+        "Asia/Tokyo",
+        "America/New_York",
+        "Europe/London"
+    ],
+    tooltip = "日期格式固定為 yyyy/MM/dd HH:mm。選項均為有效 IANA 時區。",
+    group = GROUP_DISPLAY
+)
+
+bool showCurrentBox = input.bool(
+    true,
+    "顯示目前／驗證參考區域",
+    group = GROUP_DISPLAY
+)
+
+bool showHistoricalBoxes = input.bool(
+    true,
+    "顯示歷史相似區域",
+    group = GROUP_DISPLAY
+)
+
+bool showOverlayComparison = input.bool(
+    true,
+    "顯示重疊比對線",
+    tooltip = "在目前參考區域內重疊顯示歷史 #1～#3 線型，並在每個歷史區域內以青色虛線重疊顯示目前 Close 路徑。",
+    group = GROUP_DISPLAY
+)
+
+bool showHistoricalFuturePath = input.bool(
+    true,
+    "顯示目前右側歷史後續投影",
+    tooltip = "將歷史 #1～#3 在配對完成後已走過的後續 Close 路徑，接在目前參考區域右側。",
+    group = GROUP_DISPLAY
+)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// [HS19] © 2026 Threads(@hongshihong19)｜模組：常數與持久物件
+// 常數與持久物件
+// ─────────────────────────────────────────────────────────────────────────────
+const float EPSILON = 0.0000000001
+const int MAX_HISTORY_OFFSET = 4999
+const int PANEL_ROWS = 15
+const int MAX_CANDIDATE_EVALUATIONS = 1500
+
+varip array<float> referencePath = array.new<float>(0)
+varip array<int> referenceDirections = array.new<int>(0)
+varip array<float> candidateScores = array.new<float>(0)
+varip array<int> candidateEnds = array.new<int>(0)
+varip array<float> selectedScores = array.new<float>(0)
+varip array<int> selectedEnds = array.new<int>(0)
+
+varip int cachedBarIndex = na
+varip bool cachedReferencePathValid = false
+varip int cachedTestedCandidateCount = 0
+varip int cachedThresholdCandidateCount = 0
+
+var array<box> drawnBoxes = array.new<box>(0)
+var array<label> drawnLabels = array.new<label>(0)
+var array<line> drawnLines = array.new<line>(0)
+
+var table resultPanel = table.new(
+    position.bottom_left,
+    2,
+    PANEL_ROWS,
+    border_width = 1,
+    frame_width = 1,
+    frame_color = color.new(color.gray, 40),
+    border_color = color.new(color.gray, 65)
+)
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// [HS19] © 2026 Threads(@hongshihong19)｜模組：共用函式與相似度核心
+// 工具函式
+// ─────────────────────────────────────────────────────────────────────────────
+f_format_time(int timestampValue, string timezoneValue) =>
+    string result = "資料不足"
+    if not na(timestampValue)
+        result := str.format_time(timestampValue, "yyyy/MM/dd HH:mm", timezoneValue)
+    result
+
+f_signed_percent(float value) =>
+    string result = "資料不足"
+    if not na(value)
+        string prefix = value > 0.0 ? "+" : ""
+        result := prefix + str.tostring(value, "#.00") + "%"
+    result
+
+f_rank_color(int rankIndex) =>
+    color result = color.purple
+    if rankIndex == 0
+        result := color.yellow
+    else if rankIndex == 1
+        result := color.gray
+    result
+
+f_close_bounds(int endOffset, int lengthValue) =>
+    float highestClose = na
+    float lowestClose = na
+    for i = 0 to lengthValue - 1
+        int historicalOffset = endOffset + i
+        float value = close[historicalOffset]
+        if not na(value)
+            highestClose := na(highestClose) ? value : math.max(highestClose, value)
+            lowestClose := na(lowestClose) ? value : math.min(lowestClose, value)
+    [highestClose, lowestClose]
+
+f_similarity(
+    int candidateEndOffset,
+    int lengthValue,
+    array<float> refPath,
+    array<int> refDirections,
+    float refSum,
+    float refSumSquares,
+    float refStandardDeviation
+) =>
+    float result = na
+    int candidateOldestOffset = candidateEndOffset + lengthValue - 1
+    float candidateFirstClose = close[candidateOldestOffset]
+
+    if not na(candidateFirstClose) and math.abs(candidateFirstClose) > EPSILON and array.size(refPath) == lengthValue
+        float candidateSum = 0.0
+        float candidateSumSquares = 0.0
+        float crossSum = 0.0
+        float squaredDifferenceSum = 0.0
+        int directionMatches = 0
+        bool validCandidate = true
+
+        for i = 0 to lengthValue - 1
+            int candidateOffset = candidateOldestOffset - i
+            float candidateClose = close[candidateOffset]
+            float referenceNormalized = array.get(refPath, i)
+
+            if na(candidateClose) or na(referenceNormalized)
+                validCandidate := false
+            else
+                float candidateNormalized = (candidateClose / candidateFirstClose - 1.0) * 100.0
+                candidateSum += candidateNormalized
+                candidateSumSquares += candidateNormalized * candidateNormalized
+                crossSum += referenceNormalized * candidateNormalized
+
+                float pointDifference = referenceNormalized - candidateNormalized
+                squaredDifferenceSum += pointDifference * pointDifference
+
+                if i > 0
+                    float candidatePreviousClose = close[candidateOffset + 1]
+                    if na(candidatePreviousClose)
+                        validCandidate := false
+                    else
+                        int candidateDirection = 0
+                        if candidateClose > candidatePreviousClose
+                            candidateDirection := 1
+                        else if candidateClose < candidatePreviousClose
+                            candidateDirection := -1
+
+                        int referenceDirection = array.get(refDirections, i - 1)
+                        if candidateDirection == referenceDirection
+                            directionMatches += 1
+
+        if validCandidate
+            float sampleCount = float(lengthValue)
+            float referenceVarianceNumerator = math.max(
+                sampleCount * refSumSquares - refSum * refSum,
+                0.0
+            )
+            float candidateVarianceNumerator = math.max(
+                sampleCount * candidateSumSquares - candidateSum * candidateSum,
+                0.0
+            )
+            float covarianceNumerator = sampleCount * crossSum - refSum * candidateSum
+            float correlationDenominator = math.sqrt(
+                referenceVarianceNumerator * candidateVarianceNumerator
+            )
+
+            float correlation = 0.0
+            if referenceVarianceNumerator <= EPSILON and candidateVarianceNumerator <= EPSILON
+                correlation := squaredDifferenceSum <= EPSILON ? 1.0 : 0.0
+            else if correlationDenominator > EPSILON
+                correlation := covarianceNumerator / correlationDenominator
+
+            correlation := math.max(-1.0, math.min(1.0, correlation))
+            float correlationScore = math.max(correlation, 0.0) * 100.0
+
+            float rmse = math.sqrt(squaredDifferenceSum / sampleCount)
+            float candidateMean = candidateSum / sampleCount
+            float candidateVariance = math.max(
+                candidateSumSquares / sampleCount - candidateMean * candidateMean,
+                0.0
+            )
+            float candidateStandardDeviation = math.sqrt(candidateVariance)
+            float distanceScale = math.max(
+                (refStandardDeviation + candidateStandardDeviation) * 0.5,
+                0.05
+            )
+            float distanceScore = 100.0 / (1.0 + rmse / distanceScale)
+
+            float directionScore = 100.0
+            if lengthValue > 1
+                directionScore := float(directionMatches) / float(lengthValue - 1) * 100.0
+
+            float finalScore = (
+                correlationScore * 0.60 +
+                distanceScore * 0.25 +
+                directionScore * 0.15
+            )
+            result := math.max(0.0, math.min(100.0, finalScore))
+
+    result
+
+// ─────────────────────────────────────────────────────────────────────────────
+// [HS19] © 2026 Threads(@hongshihong19)｜模組：歷史搜尋、排序與非重繪快取
+// 完整搜尋只在圖表最後一根資料執行。
+// 指標在即時 K 棒的每次資料更新會重新執行，但所有配對資料固定取自 close[1]
+// 或更早的已收盤資料，因此同一根即時 K 棒內的相似度、日期及排名不會變動。
+// 每次執行仍重建圖表物件，確保 Pine 即時回滾後框線與標籤持續顯示。
+// ─────────────────────────────────────────────────────────────────────────────
+if barstate.islast
+
+    // 刪除前一次圖表物件，避免 box／label 累積。
+    // 這段在每次即時更新執行，確保 Pine rollback 後仍能重建目前顯示。
+    if array.size(drawnBoxes) > 0
+        for objectIndex = 0 to array.size(drawnBoxes) - 1
+            box.delete(array.get(drawnBoxes, objectIndex))
+    array.clear(drawnBoxes)
+
+    if array.size(drawnLabels) > 0
+        for objectIndex = 0 to array.size(drawnLabels) - 1
+            label.delete(array.get(drawnLabels, objectIndex))
+    array.clear(drawnLabels)
+
+    if array.size(drawnLines) > 0
+        for objectIndex = 0 to array.size(drawnLines) - 1
+            line.delete(array.get(drawnLines, objectIndex))
+    array.clear(drawnLines)
+
+    // 清空面板既有儲存格；面板每次即時更新只做輕量重繪。
+    for panelRow = 0 to PANEL_ROWS - 1
+        table.cell(
+            resultPanel,
+            0,
+            panelRow,
+            "",
+            text_color = color.white,
+            bgcolor = color.new(color.black, 100),
+            text_halign = text.align_left,
+            text_size = size.small
+        )
+        table.cell(
+            resultPanel,
+            1,
+            panelRow,
+            "",
+            text_color = color.white,
+            bgcolor = color.new(color.black, 100),
+            text_halign = text.align_left,
+            text_size = size.small
+        )
+
+    // validationOffset = 0 時，anchorOffset = 1，即正式終點 close[1]。
+    int anchorOffset = validationOffset + 1
+    int anchorOldestOffset = anchorOffset + patternLength - 1
+
+    // 歷史候選的最近端：
+    // candidateEnd - futureValidationBars 與 anchorOldestOffset 之間至少留 isolationBars 根。
+    // 因此 candidateEnd >= anchorOffset + patternLength + isolationBars + futureValidationBars。
+    int minimumCandidateEnd = (
+        anchorOffset +
+        patternLength +
+        isolationBars +
+        futureValidationBars
+    )
+
+    // 歷史搜尋的最遠端同時受：
+    // 1. 使用者設定；2. 圖表實際 bar_index；3. 5000 根歷史緩衝上限約束。
+    int requestedMaximumCandidateEnd = anchorOffset + historySearchBars
+    int loadedMaximumCandidateEnd = bar_index - (patternLength - 1)
+    int bufferMaximumCandidateEnd = MAX_HISTORY_OFFSET - (patternLength - 1)
+    int maximumCandidateEnd = math.min(
+        requestedMaximumCandidateEnd,
+        math.min(loadedMaximumCandidateEnd, bufferMaximumCandidateEnd)
+    )
+
+    // 極端設定（例如搜尋 5000 根、間隔 1、長度 120）可能觸發 Pine 單次迴圈
+    // 執行時間限制。程式最多評估約 1500 組候選；只有必要時才自動放大實際間隔。
+    // 此步長只由 input 值計算，不依賴每根 K 棒變動的 series 值。
+    int configuredCandidateSpan = math.max(
+        historySearchBars -
+        (patternLength + isolationBars + futureValidationBars) +
+        1,
+        1
+    )
+    int performanceRequiredStep = int(
+        math.ceil(
+            float(configuredCandidateSpan) /
+            float(MAX_CANDIDATE_EVALUATIONS)
+        )
+    )
+    int effectiveCandidateStep = math.max(
+        candidateStep,
+        performanceRequiredStep
+    )
+
+    bool referenceDataAvailable = (
+        anchorOldestOffset <= bar_index and
+        anchorOldestOffset <= MAX_HISTORY_OFFSET and
+        not na(close[anchorOldestOffset]) and
+        not na(close[anchorOffset])
+    )
+
+    bool searchRangeAvailable = (
+        referenceDataAvailable and
+        maximumCandidateEnd >= minimumCandidateEnd
+    )
+
+    // varip 快取讓高計算量搜尋在同一根即時 K 棒只執行一次。
+    // 框線、標籤與表格仍會在每次即時更新重建，以符合 Pine rollback 行為。
+    bool shouldRunSearch = (
+        na(cachedBarIndex) or
+        cachedBarIndex != bar_index
+    )
+
+    if shouldRunSearch
+        cachedBarIndex := bar_index
+        cachedReferencePathValid := referenceDataAvailable
+        cachedTestedCandidateCount := 0
+        cachedThresholdCandidateCount := 0
+
+        array.clear(referencePath)
+        array.clear(referenceDirections)
+        array.clear(candidateScores)
+        array.clear(candidateEnds)
+        array.clear(selectedScores)
+        array.clear(selectedEnds)
+
+        float referenceSum = 0.0
+        float referenceSumSquares = 0.0
+        float referenceStandardDeviation = na
+
+        // 建立目前／驗證參考區域的正規化 Close 路徑。
+        if referenceDataAvailable
+            float referenceFirstClose = close[anchorOldestOffset]
+            if na(referenceFirstClose) or math.abs(referenceFirstClose) <= EPSILON
+                cachedReferencePathValid := false
+            else
+                for i = 0 to patternLength - 1
+                    int referenceOffset = anchorOldestOffset - i
+                    float referenceClose = close[referenceOffset]
+
+                    if na(referenceClose)
+                        cachedReferencePathValid := false
+                    else
+                        float referenceNormalized = (
+                            referenceClose / referenceFirstClose - 1.0
+                        ) * 100.0
+
+                        array.push(referencePath, referenceNormalized)
+                        referenceSum += referenceNormalized
+                        referenceSumSquares += (
+                            referenceNormalized *
+                            referenceNormalized
+                        )
+
+                        if i > 0
+                            float previousReferenceClose = close[referenceOffset + 1]
+                            if na(previousReferenceClose)
+                                cachedReferencePathValid := false
+                            else
+                                int referenceDirection = 0
+                                if referenceClose > previousReferenceClose
+                                    referenceDirection := 1
+                                else if referenceClose < previousReferenceClose
+                                    referenceDirection := -1
+                                array.push(
+                                    referenceDirections,
+                                    referenceDirection
+                                )
+
+                if (
+                    cachedReferencePathValid and
+                    array.size(referencePath) == patternLength and
+                    array.size(referenceDirections) == patternLength - 1
+                )
+                    float referenceCount = float(patternLength)
+                    float referenceMean = referenceSum / referenceCount
+                    float referenceVariance = math.max(
+                        referenceSumSquares / referenceCount -
+                        referenceMean * referenceMean,
+                        0.0
+                    )
+                    referenceStandardDeviation := math.sqrt(
+                        referenceVariance
+                    )
+                else
+                    cachedReferencePathValid := false
+
+        // 搜尋歷史候選。歷史後續資料不傳入 f_similarity()，不參與配對分數。
+        if searchRangeAvailable and cachedReferencePathValid
+            for candidateEnd = minimumCandidateEnd to maximumCandidateEnd by effectiveCandidateStep
+                cachedTestedCandidateCount += 1
+
+                float similarity = f_similarity(
+                    candidateEnd,
+                    patternLength,
+                    referencePath,
+                    referenceDirections,
+                    referenceSum,
+                    referenceSumSquares,
+                    referenceStandardDeviation
+                )
+
+                if (
+                    not na(similarity) and
+                    similarity >= minimumSimilarity
+                )
+                    array.push(candidateScores, similarity)
+                    array.push(candidateEnds, candidateEnd)
+                    cachedThresholdCandidateCount += 1
+
+        // 依相似度由高至低選取前 1～3 名。
+        // 入選樣本的終點至少相隔 patternLength，避免同一段行情重複入選。
+        if array.size(candidateScores) > 0
+            for rankIndex = 0 to displayCount - 1
+                float bestScore = na
+                int bestEnd = na
+
+                for candidateIndex = 0 to array.size(candidateScores) - 1
+                    float score = array.get(
+                        candidateScores,
+                        candidateIndex
+                    )
+                    int candidateEnd = array.get(
+                        candidateEnds,
+                        candidateIndex
+                    )
+                    bool sufficientlySeparated = true
+
+                    if array.size(selectedEnds) > 0
+                        for selectedIndex = 0 to array.size(selectedEnds) - 1
+                            int existingEnd = array.get(
+                                selectedEnds,
+                                selectedIndex
+                            )
+                            if (
+                                math.abs(candidateEnd - existingEnd) <
+                                patternLength
+                            )
+                                sufficientlySeparated := false
+
+                    if (
+                        sufficientlySeparated and
+                        (na(bestScore) or score > bestScore)
+                    )
+                        bestScore := score
+                        bestEnd := candidateEnd
+
+                if not na(bestScore) and not na(bestEnd)
+                    array.push(selectedScores, bestScore)
+                    array.push(selectedEnds, bestEnd)
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // [HS19] © 2026 Threads(@hongshihong19)｜模組：目前區域與歷史重疊線
+    // 圖表框選：目前／驗證參考區域
+    // ─────────────────────────────────────────────────────────────────────────
+    float referenceFirstClose = cachedReferencePathValid ? close[anchorOldestOffset] : na
+    int overlaySegmentStep = math.max(1, int(math.ceil(float(math.max(patternLength - 1, 1) * math.max(displayCount, 1) * 2) / 180.0)))
+    int futureProjectionStep = math.max(1, int(math.ceil(float(math.max(historicalFutureDisplayBars, 1) * math.max(displayCount, 1)) / 180.0)))
+
+    if cachedReferencePathValid and showCurrentBox
+        [referenceTop, referenceBottom] = f_close_bounds(
+            anchorOffset,
+            patternLength
+        )
+
+        if not na(referenceTop) and not na(referenceBottom)
+            float referenceRange = referenceTop - referenceBottom
+            float referencePadding = math.max(
+                referenceRange * 0.05,
+                math.max(
+                    math.abs(close[anchorOffset]) * 0.0001,
+                    syminfo.mintick * 10.0
+                )
+            )
+
+            int referenceLeftTime = time[anchorOldestOffset]
+            int referenceRightTime = time[anchorOffset - 1]
+            color referenceColor = color.aqua
+
+            box referenceBox = box.new(
+                left = referenceLeftTime,
+                top = referenceTop + referencePadding,
+                right = referenceRightTime,
+                bottom = referenceBottom - referencePadding,
+                xloc = xloc.bar_time,
+                border_color = referenceColor,
+                border_width = 2,
+                bgcolor = color.new(referenceColor, 88)
+            )
+            array.push(drawnBoxes, referenceBox)
+
+            string referenceLabelText = "目前 Close 比對區域｜終點 close[1]"
+            if validationOffset > 0
+                referenceLabelText := (
+                    "歷史驗證區域｜位移 " +
+                    str.tostring(validationOffset) +
+                    " 根｜終點 close[" +
+                    str.tostring(anchorOffset) +
+                    "]"
+                )
+
+            label referenceLabel = label.new(
+                x = referenceLeftTime,
+                y = referenceTop + referencePadding,
+                text = referenceLabelText,
+                xloc = xloc.bar_time,
+                yloc = yloc.price,
+                style = label.style_label_down,
+                color = referenceColor,
+                textcolor = color.black,
+                size = size.small
+            )
+            array.push(drawnLabels, referenceLabel)
+
+            // 在目前參考區域內，將歷史 #1～#3 的正規化 Close 路徑轉換到目前價格尺度，
+            // 以虛線重疊顯示，方便直接與目前主線型比較。
+            if showOverlayComparison and array.size(selectedEnds) > 0 and not na(referenceFirstClose) and math.abs(referenceFirstClose) > EPSILON
+                for rankIndex = 0 to array.size(selectedEnds) - 1
+                    int candidateEnd = array.get(selectedEnds, rankIndex)
+                    int candidateOldestOffset = candidateEnd + patternLength - 1
+                    float candidateFirstClose = close[candidateOldestOffset]
+                    color overlayColor = f_rank_color(rankIndex)
+
+                    if not na(candidateFirstClose) and math.abs(candidateFirstClose) > EPSILON
+                        for pointIndex = 0 to patternLength - 2 by overlaySegmentStep
+                            int nextPointIndex = math.min(pointIndex + overlaySegmentStep, patternLength - 1)
+                            float candidateClose1 = close[candidateOldestOffset - pointIndex]
+                            float candidateClose2 = close[candidateOldestOffset - nextPointIndex]
+
+                            if not na(candidateClose1) and not na(candidateClose2)
+                                float candidateNorm1 = (candidateClose1 / candidateFirstClose - 1.0) * 100.0
+                                float candidateNorm2 = (candidateClose2 / candidateFirstClose - 1.0) * 100.0
+                                float overlayY1 = referenceFirstClose * (1.0 + candidateNorm1 / 100.0)
+                                float overlayY2 = referenceFirstClose * (1.0 + candidateNorm2 / 100.0)
+                                int overlayX1 = time[anchorOldestOffset - pointIndex]
+                                int overlayX2 = time[anchorOldestOffset - nextPointIndex]
+
+                                line currentCompareLine = line.new(
+                                    x1 = overlayX1,
+                                    y1 = overlayY1,
+                                    x2 = overlayX2,
+                                    y2 = overlayY2,
+                                    xloc = xloc.bar_time,
+                                    extend = extend.none,
+                                    color = overlayColor,
+                                    style = line.style_dashed,
+                                    width = 2
+                                )
+                                array.push(drawnLines, currentCompareLine)
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // [HS19] © 2026 Threads(@hongshihong19)｜模組：歷史後續路徑投影
+    // 目前參考區域右側：歷史 #1～#3 後續實際走勢投影
+    // 每條投影線使用該歷史樣本「配對區域第一根 Close」作為比例基準，
+    // 因此會與目前框內同色虛線的最後一點無縫銜接。
+    // 正常模式最多向目前 K 棒右側投影 200 根，低於 Pine 的 500 根未來繪圖限制。
+    // ─────────────────────────────────────────────────────────────────────────
+    if showHistoricalFuturePath and cachedReferencePathValid and array.size(selectedEnds) > 0 and not na(referenceFirstClose) and math.abs(referenceFirstClose) > EPSILON
+        int referenceEndBarIndex = bar_index - anchorOffset
+
+        for rankIndex = 0 to array.size(selectedEnds) - 1
+            int candidateEnd = array.get(selectedEnds, rankIndex)
+            int candidateOldestOffset = candidateEnd + patternLength - 1
+            float candidateFirstClose = close[candidateOldestOffset]
+            color projectionColor = f_rank_color(rankIndex)
+            int availableFutureBars = math.min(historicalFutureDisplayBars, candidateEnd - 1)
+
+            if not na(candidateFirstClose) and math.abs(candidateFirstClose) > EPSILON and availableFutureBars > 0
+                for futureIndex = 0 to availableFutureBars - 1 by futureProjectionStep
+                    int nextFutureIndex = math.min(futureIndex + futureProjectionStep, availableFutureBars)
+                    int futureOffset1 = candidateEnd - futureIndex
+                    int futureOffset2 = candidateEnd - nextFutureIndex
+                    float historicalFutureClose1 = close[futureOffset1]
+                    float historicalFutureClose2 = close[futureOffset2]
+
+                    if not na(historicalFutureClose1) and not na(historicalFutureClose2)
+                        float projectedY1 = referenceFirstClose * (historicalFutureClose1 / candidateFirstClose)
+                        float projectedY2 = referenceFirstClose * (historicalFutureClose2 / candidateFirstClose)
+                        int projectedX1 = referenceEndBarIndex + futureIndex
+                        int projectedX2 = referenceEndBarIndex + nextFutureIndex
+
+                        line projectedFutureLine = line.new(
+                            x1 = projectedX1,
+                            y1 = projectedY1,
+                            x2 = projectedX2,
+                            y2 = projectedY2,
+                            xloc = xloc.bar_index,
+                            extend = extend.none,
+                            color = projectionColor,
+                            style = line.style_solid,
+                            width = rankIndex == 0 ? 3 : 2
+                        )
+                        array.push(drawnLines, projectedFutureLine)
+
+                int finalFutureOffset = candidateEnd - availableFutureBars
+                float finalHistoricalClose = close[finalFutureOffset]
+                if not na(finalHistoricalClose)
+                    float finalProjectedY = referenceFirstClose * (finalHistoricalClose / candidateFirstClose)
+                    int finalProjectedX = referenceEndBarIndex + availableFutureBars
+                    string projectionLabelText = (
+                        "歷史 #" + str.tostring(rankIndex + 1) +
+                        " 後續 " + str.tostring(availableFutureBars) + " 根"
+                    )
+
+                    label projectionLabel = label.new(
+                        x = finalProjectedX,
+                        y = finalProjectedY,
+                        text = projectionLabelText,
+                        xloc = xloc.bar_index,
+                        yloc = yloc.price,
+                        style = label.style_label_left,
+                        color = projectionColor,
+                        textcolor = rankIndex == 2 ? color.white : color.black,
+                        size = size.tiny
+                    )
+                    array.push(drawnLabels, projectionLabel)
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 圖表框選：歷史相似區域
+    // ─────────────────────────────────────────────────────────────────────────
+    if showHistoricalBoxes and array.size(selectedEnds) > 0
+        for rankIndex = 0 to array.size(selectedEnds) - 1
+            int candidateEnd = array.get(selectedEnds, rankIndex)
+            float similarity = array.get(selectedScores, rankIndex)
+            int candidateOldestOffset = candidateEnd + patternLength - 1
+
+            [candidateTop, candidateBottom] = f_close_bounds(
+                candidateEnd,
+                patternLength
+            )
+
+            if not na(candidateTop) and not na(candidateBottom)
+                float candidateRange = candidateTop - candidateBottom
+                float candidatePadding = math.max(
+                    candidateRange * 0.05,
+                    math.max(
+                        math.abs(close[candidateEnd]) * 0.0001,
+                        syminfo.mintick * 10.0
+                    )
+                )
+
+                int candidateLeftTime = time[candidateOldestOffset]
+                int candidateRightTime = time[candidateEnd - 1]
+                color candidateColor = f_rank_color(rankIndex)
+
+                box candidateBox = box.new(
+                    left = candidateLeftTime,
+                    top = candidateTop + candidatePadding,
+                    right = candidateRightTime,
+                    bottom = candidateBottom - candidatePadding,
+                    xloc = xloc.bar_time,
+                    border_color = candidateColor,
+                    border_width = 2,
+                    bgcolor = color.new(candidateColor, 88)
+                )
+                array.push(drawnBoxes, candidateBox)
+
+                string candidateLabelText = (
+                    "歷史相似 #" +
+                    str.tostring(rankIndex + 1) +
+                    "｜" +
+                    str.tostring(similarity, "#.0") +
+                    "%"
+                )
+
+                label candidateLabel = label.new(
+                    x = candidateLeftTime,
+                    y = candidateTop + candidatePadding,
+                    text = candidateLabelText,
+                    xloc = xloc.bar_time,
+                    yloc = yloc.price,
+                    style = label.style_label_down,
+                    color = candidateColor,
+                    textcolor = rankIndex == 2 ? color.white : color.black,
+                    size = size.small
+                )
+                array.push(drawnLabels, candidateLabel)
+
+                // 在每個歷史相似區域內，以青色虛線重疊顯示目前參考區域的正規化 Close 路徑。
+                if showOverlayComparison and cachedReferencePathValid and not na(referenceFirstClose) and math.abs(referenceFirstClose) > EPSILON
+                    float candidateFirstClose = close[candidateOldestOffset]
+                    if not na(candidateFirstClose) and math.abs(candidateFirstClose) > EPSILON
+                        for pointIndex = 0 to patternLength - 2 by overlaySegmentStep
+                            int nextPointIndex = math.min(pointIndex + overlaySegmentStep, patternLength - 1)
+                            float refNorm1 = array.get(referencePath, pointIndex)
+                            float refNorm2 = array.get(referencePath, nextPointIndex)
+                            float overlayY1 = candidateFirstClose * (1.0 + refNorm1 / 100.0)
+                            float overlayY2 = candidateFirstClose * (1.0 + refNorm2 / 100.0)
+                            int overlayX1 = time[candidateOldestOffset - pointIndex]
+                            int overlayX2 = time[candidateOldestOffset - nextPointIndex]
+
+                            line historyCompareLine = line.new(
+                                x1 = overlayX1,
+                                y1 = overlayY1,
+                                x2 = overlayX2,
+                                y2 = overlayY2,
+                                xloc = xloc.bar_time,
+                                extend = extend.none,
+                                color = color.aqua,
+                                style = line.style_dashed,
+                                width = 2
+                            )
+                            array.push(drawnLines, historyCompareLine)
+
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // [HS19] © 2026 Threads(@hongshihong19)｜模組：左下角結果面板
+    // 左下角精簡面板
+    // 固定使用 15 列，不再建立 40 列空白儲存格，避免一般視窗必須切換全螢幕
+    // 才能看完整面板。每個歷史樣本只使用 2 列，仍保留日期、相似度、距離
+    // 與歷史後續報酬。
+    // ─────────────────────────────────────────────────────────────────────────
+    color titleBackground = color.new(color.blue, 15)
+    color normalBackground = color.new(color.black, 20)
+    color warningBackground = color.new(color.orange, 70)
+    color errorBackground = color.new(color.red, 40)
+    color valueTextColor = color.white
+
+    table.cell(
+        resultPanel,
+        0,
+        0,
+        "Close 歷史線型比對",
+        text_color = color.white,
+        bgcolor = titleBackground,
+        text_halign = text.align_left,
+        text_size = size.small
+    )
+    table.cell(
+        resultPanel,
+        1,
+        0,
+        "v1.2.2",
+        text_color = color.white,
+        bgcolor = titleBackground,
+        text_halign = text.align_right,
+        text_size = size.small
+    )
+
+    string modeText = validationOffset == 0 ? "正常模式" : "歷史驗證｜位移 " + str.tostring(validationOffset)
+    table.cell(resultPanel, 0, 1, "模式", text_color = color.white, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+    table.cell(resultPanel, 1, 1, modeText, text_color = valueTextColor, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+
+    string referenceStartText = referenceDataAvailable ? f_format_time(time[anchorOldestOffset], panelTimezone) : "資料不足"
+    string referenceEndText = referenceDataAvailable ? f_format_time(time[anchorOffset], panelTimezone) : "資料不足"
+
+    table.cell(resultPanel, 0, 2, "參考開始", text_color = color.white, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+    table.cell(resultPanel, 1, 2, referenceStartText, text_color = valueTextColor, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+
+    table.cell(resultPanel, 0, 3, "參考結束", text_color = color.white, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+    table.cell(resultPanel, 1, 3, referenceEndText, text_color = valueTextColor, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+
+    string endpointText = "close[1] 已收盤｜close[0] 排除"
+    if validationOffset > 0
+        endpointText := "close[" + str.tostring(anchorOffset) + "] 模擬終點｜其後資料排除"
+
+    table.cell(resultPanel, 0, 4, "正式終點", text_color = color.white, bgcolor = warningBackground, text_halign = text.align_left, text_size = size.tiny)
+    table.cell(resultPanel, 1, 4, endpointText, text_color = color.white, bgcolor = warningBackground, text_halign = text.align_left, text_size = size.tiny)
+
+    string compareSettingText = (
+        str.tostring(patternLength) + "根｜搜尋" +
+        str.tostring(historySearchBars) + "｜間隔" +
+        str.tostring(candidateStep) + "/" +
+        str.tostring(effectiveCandidateStep) + "｜後續顯示" +
+        str.tostring(historicalFutureDisplayBars) + "根"
+    )
+    table.cell(resultPanel, 0, 5, "比對設定", text_color = color.white, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+    table.cell(resultPanel, 1, 5, compareSettingText, text_color = valueTextColor, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+
+    string candidateSummaryText = (
+        "已測" + str.tostring(cachedTestedCandidateCount) +
+        "｜達" + str.tostring(cachedThresholdCandidateCount) +
+        "｜門檻" + str.tostring(minimumSimilarity, "#.0") + "%"
+    )
+    table.cell(resultPanel, 0, 6, "候選統計", text_color = color.white, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+    table.cell(resultPanel, 1, 6, candidateSummaryText, text_color = valueTextColor, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+
+    table.cell(resultPanel, 0, 7, "更新／驗證", text_color = color.white, bgcolor = warningBackground, text_halign = text.align_left, text_size = size.tiny)
+    table.cell(resultPanel, 1, 7, "新 K 形成後更新｜後續報酬不參與配對", text_color = color.white, bgcolor = warningBackground, text_halign = text.align_left, text_size = size.tiny)
+
+    string statusText = ""
+    color statusBackground = normalBackground
+    if not referenceDataAvailable or not cachedReferencePathValid
+        statusText := "參考區域資料不足，無法建立 Close 路徑"
+        statusBackground := errorBackground
+    else if not searchRangeAvailable
+        statusText := "歷史資料不足，無法完成比對"
+        statusBackground := errorBackground
+    else if array.size(selectedEnds) == 0
+        statusBackground := warningBackground
+        if cachedThresholdCandidateCount == 0
+            statusText := "沒有任何候選達到 " + str.tostring(minimumSimilarity, "#.0") + "%"
+        else
+            statusText := "達門檻候選經樣本分離後無有效排名"
+    else
+        statusText := "已找到 " + str.tostring(array.size(selectedEnds)) + " 組獨立歷史樣本"
+
+    table.cell(resultPanel, 0, 8, "狀態", text_color = color.white, bgcolor = statusBackground, text_halign = text.align_left, text_size = size.tiny)
+    table.cell(resultPanel, 1, 8, statusText, text_color = color.white, bgcolor = statusBackground, text_halign = text.align_left, text_size = size.tiny)
+
+    // 歷史結果固定從第 9 列開始；每組只使用 2 列，最多 3 組，剛好使用至第 14 列。
+    if array.size(selectedEnds) > 0
+        for rankIndex = 0 to array.size(selectedEnds) - 1
+            int candidateEnd = array.get(selectedEnds, rankIndex)
+            float similarity = array.get(selectedScores, rankIndex)
+            int candidateOldestOffset = candidateEnd + patternLength - 1
+            int distanceFromAnchor = candidateEnd - anchorOffset
+
+            float candidateEndClose = close[candidateEnd]
+            float candidateFutureClose = close[candidateEnd - futureValidationBars]
+            float candidateFutureReturn = na
+            if not na(candidateFutureClose) and not na(candidateEndClose) and math.abs(candidateEndClose) > EPSILON
+                candidateFutureReturn := (
+                    candidateFutureClose / candidateEndClose - 1.0
+                ) * 100.0
+
+            color rankColor = f_rank_color(rankIndex)
+            color rankBackground = color.new(rankColor, 72)
+            color rankTextColor = rankIndex == 2 ? color.white : color.black
+            int mainRow = 9 + rankIndex * 2
+            int detailRow = mainRow + 1
+
+            string rankTitle = (
+                "歷史 #" + str.tostring(rankIndex + 1) +
+                "｜" + str.tostring(similarity, "#.0") + "%"
+            )
+            string returnText = (
+                "後續" + str.tostring(futureValidationBars) +
+                "根 " + f_signed_percent(candidateFutureReturn)
+            )
+
+            table.cell(resultPanel, 0, mainRow, rankTitle, text_color = rankTextColor, bgcolor = rankBackground, text_halign = text.align_left, text_size = size.tiny)
+            table.cell(resultPanel, 1, mainRow, returnText, text_color = rankTextColor, bgcolor = rankBackground, text_halign = text.align_left, text_size = size.tiny)
+
+            string startDateText = f_format_time(time[candidateOldestOffset], panelTimezone)
+            string endDateText = f_format_time(time[candidateEnd], panelTimezone)
+            string distanceText = "距 " + str.tostring(distanceFromAnchor) + " 根"
+
+            table.cell(resultPanel, 0, detailRow, startDateText + " →", text_color = valueTextColor, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+            table.cell(resultPanel, 1, detailRow, endDateText + "｜" + distanceText, text_color = valueTextColor, bgcolor = normalBackground, text_halign = text.align_left, text_size = size.tiny)
+
+
+// ============================================================================
+// 程式結尾｜© 2026 Threads(@hongshihong19)｜Mozilla Public License 2.0
+// ============================================================================

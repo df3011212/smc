@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="Threads（@hongshihong19）">
-  <meta name="description" content="SR+SMC+VWAP 多空雙向教練 v6.6.9 下載中心，集中整理教練手冊、Pine Script 教材與學習檔案。">
+  <meta name="description" content="SR+SMC+VWAP 多空雙向教練 v7.0.0 下載中心，集中整理教練手冊、Pine Script 教材與學習檔案。">
   <meta name="theme-color" content="#14213d">
-  <title>SR+SMC+VWAP 多空雙向教練 v6.6.9</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=8.1.25-featured-links">
+  <title>SR+SMC+VWAP 多空雙向教練 v7.0.0</title>
+  <link rel="stylesheet" href="assets/css/style.css?v=8.1.48">
   <script src="assets/js/i18n.js?v=8.1.22-star-billboard"></script>
   <script src="assets/js/visitor-counter.js?v=8.1.18" defer></script>
 </head>
@@ -17,7 +17,7 @@
       <a class="brand" href="index.html" aria-label="回到首頁">
         <span class="brand-mark" aria-hidden="true">SR</span>
         <span>
-          <strong id="siteName">SR+SMC+VWAP 多空雙向教練 v6.6.9</strong>
+          <strong id="siteName">SR+SMC+VWAP 多空雙向教練 v7.0.0</strong>
           <small id="siteSubtitle">Pine Script Coaching • Strategy • Execution</small>
         </span>
       </a>
@@ -48,7 +48,7 @@
         <nav class="public-link-actions" aria-label="TradingView 腳本與 Threads 連結">
           <a class="public-link public-link-tradingview" href="https://tw.tradingview.com/script/v9sZVYZ9/" target="_blank" rel="noopener noreferrer">
             <span class="public-link-kicker">TradingView 主圖</span>
-            <strong>SR＋SMC＋VWAP 多空雙向教練 v6.6.9</strong>
+            <strong>SR＋SMC＋VWAP 多空雙向教練 v7.0.0</strong>
             <span class="public-link-arrow" aria-hidden="true">↗</span>
           </a>
           <a class="public-link public-link-rvol" href="https://tw.tradingview.com/script/s1XifCPs/" target="_blank" rel="noopener noreferrer">
@@ -64,44 +64,12 @@
         </nav>
       </section>
 
-      <div class="star-billboard-copy">
-        <div class="star-billboard-badges" aria-label="腳本特色">
-          <span class="star-badge star-badge-primary">STAR INDICATOR</span>
-          <span class="star-badge">OPEN-SOURCE</span>
-          <span class="star-badge">v6.6.9</span>
-        </div>
-        <p class="star-billboard-kicker">SR × SMC × VWAP｜多空雙向教練</p>
-        <h1 id="starBillboardTitle">把市場結構，變成一套<br><span>看得見的交易劇本</span></h1>
-        <p class="star-billboard-lead">整合支撐阻力、SMC、Order Block、FVG、流動性掃蕩、VWAP 與多週期平行通道，從方向、區域、結構確認到出場，集中在同一張圖表。</p>
+      <div id="starBillboardCarousel" class="star-billboard-carousel" aria-live="polite"></div>
 
-        <div class="star-billboard-features" aria-label="核心特色">
-          <span>四組多空情境路徑</span>
-          <span>38 組警報條件</span>
-          <span>中英雙語介面</span>
-        </div>
-
-        <div class="star-billboard-actions">
-          <a class="star-button star-button-primary" href="https://tw.tradingview.com/script/v9sZVYZ9/" target="_blank" rel="noopener noreferrer">
-            <span>在 TradingView 查看腳本</span>
-            <b aria-hidden="true">↗</b>
-          </a>
-          <a class="star-button star-button-secondary" href="#manuals">查看完整教練手冊</a>
-        </div>
-
-        <p class="star-billboard-note">作者／著作權人：Threads（@hongshihong19）</p>
-      </div>
-
-      <div class="star-billboard-product" aria-label="SR+SMC+VWAP 多空雙向教練圖表預覽">
-        <div class="star-product-halo" aria-hidden="true"></div>
-        <a class="star-product-frame" href="https://tw.tradingview.com/script/v9sZVYZ9/" target="_blank" rel="noopener noreferrer" aria-label="開啟 TradingView 腳本頁面">
-          <div class="star-product-ribbon">FEATURED SCRIPT</div>
-          <img src="assets/images/sr-smc-vwap-star-billboard.webp" alt="SR+SMC+VWAP 多空雙向教練 TradingView 圖表畫面">
-          <div class="star-product-caption">
-            <span>SR＋SMC＋VWAP</span>
-            <strong>多空雙向教練 v6.6.9</strong>
-          </div>
-        </a>
-        <div class="star-product-shadow" aria-hidden="true"></div>
+      <div id="starBillboardControls" class="star-billboard-controls" aria-label="明星看板頁面切換">
+        <button id="starBillboardPrev" class="star-billboard-nav" type="button" aria-label="上一張明星看板">←</button>
+        <div id="starBillboardDots" class="star-billboard-dots" role="tablist" aria-label="明星看板頁碼"></div>
+        <button id="starBillboardNext" class="star-billboard-nav" type="button" aria-label="下一張明星看板">→</button>
       </div>
     </section>
 
@@ -111,12 +79,12 @@
     <main>
       <section class="hero hero-manual">
         <div class="hero-copy">
-          <span class="eyebrow">Modern Corporate Training Manual</span>
-          <h2 id="heroTitle">SR+SMC+VWAP 多空雙向教練 v6.6.9</h2>
+          <span id="modernHeroEyebrow" class="eyebrow">Modern Corporate Training Manual</span>
+          <h2 id="heroTitle">SR+SMC+VWAP 多空雙向教練 v7.0.0</h2>
           <p id="heroLead">Support Resistance + SMC Coach + VWAP｜集中放置 PDF、Pine Script、ZIP 與教學教材，讓版本更新、下載與查找更清楚。</p>
 
-          <div class="hero-pills" aria-label="網站重點資訊">
-            <span class="meta-pill">最新版本 v6.6.9</span>
+          <div id="modernHeroPills" class="hero-pills" aria-label="網站重點資訊">
+            <span class="meta-pill">最新版本 v7.0.0</span>
             <span class="meta-pill">企業培訓手冊風</span>
             <span class="meta-pill">支援 PDF 線上預覽</span>
             <span class="meta-pill">GitHub Pages 靜態部署</span>
@@ -126,7 +94,7 @@
             目前首頁顯示的是本機草稿資料。若要同步到 GitHub 公開網站，仍需從管理頁匯出新的 <code>manuals-data.js</code> 並重新上傳。
           </div>
 
-          <div class="hero-actions">
+          <div id="modernHeroActions" class="hero-actions">
             <a class="button button-primary" href="#manuals">立即瀏覽手冊</a>
             <a class="button button-secondary" href="articles.html">瀏覽文章與公告</a>
             <a class="button button-ghost" href="legal.html">使用與風險聲明</a>
@@ -165,8 +133,8 @@
           <div class="hero-carousel-shell">
             <div class="hero-carousel-header">
               <div>
-                <span class="eyebrow">Featured Slides</span>
-                <h2>精選手冊投影輪播</h2>
+                <span id="modernHeroCarouselEyebrow" class="eyebrow">Featured Slides</span>
+                <h2 id="modernHeroCarouselTitle">精選手冊投影輪播</h2>
               </div>
               <div class="hero-carousel-controls">
                 <button id="heroPrev" class="carousel-nav" type="button" aria-label="上一張">‹</button>
@@ -341,7 +309,7 @@
 
     <footer class="site-footer">
       <div>
-        <strong id="footerSiteName">SR+SMC+VWAP 多空雙向教練 v6.6.9</strong>
+        <strong id="footerSiteName">SR+SMC+VWAP 多空雙向教練 v7.0.0</strong>
         <p>免費教學資源網站；不收費、不代操、不保證收益，亦非 TradingView、GitHub 或任何金融機構的官方網站。</p>
         <nav class="footer-links" aria-label="法律資訊">
           <a href="legal.html">使用條款與免責聲明</a>
@@ -352,7 +320,7 @@
       </div>
       <div class="footer-copyright">
         <p><strong>作者／著作權人：</strong><a href="https://www.threads.com/@hongshihong19" target="_blank" rel="noopener noreferrer">Threads（@hongshihong19）</a></p>
-        <p><strong>版本：</strong>v6.6.9</p>
+        <p><strong>版本：</strong>v7.0.0</p>
         <p>© 2026 Threads（@hongshihong19）著作權所有。</p>
       </div>
 </footer>
@@ -400,9 +368,9 @@
     </div>
   </dialog>
 
-  <script src="assets/js/manuals-data.js?v=8.1.25-featured-links"></script>
+  <script src="assets/js/manuals-data.js?v=8.1.48"></script>
   <script src="assets/js/site-announcement.js?v=8.1.18"></script>
   <script src="assets/js/pdf-lib.min.js"></script>
-  <script src="assets/js/app.js?v=8.1.25-featured-links"></script>
+  <script src="assets/js/app.js?v=8.1.48"></script>
 </body>
 </html>

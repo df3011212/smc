@@ -21,8 +21,13 @@
     siteName: document.querySelector("#siteName"),
     footerSiteName: document.querySelector("#footerSiteName"),
     siteSubtitle: document.querySelector("#siteSubtitle"),
+    modernHeroEyebrow: document.querySelector("#modernHeroEyebrow"),
     heroTitle: document.querySelector("#heroTitle"),
     heroLead: document.querySelector("#heroLead"),
+    modernHeroPills: document.querySelector("#modernHeroPills"),
+    modernHeroActions: document.querySelector("#modernHeroActions"),
+    modernHeroCarouselEyebrow: document.querySelector("#modernHeroCarouselEyebrow"),
+    modernHeroCarouselTitle: document.querySelector("#modernHeroCarouselTitle"),
     siteNotice: document.querySelector("#siteNotice"),
     localDraftNotice: document.querySelector("#localDraftNotice"),
     manualCount: document.querySelector("#manualCount"),
@@ -64,11 +69,14 @@
     officialLinksBar: document.querySelector(".public-link-bar"),
     officialLinksEyebrow: document.querySelector(".public-link-intro .eyebrow"),
     officialLinksTitle: document.querySelector(".public-link-intro strong"),
-    officialMainLink: document.querySelector(".public-link-tradingview"),
-    officialRvolLink: document.querySelector(".public-link-rvol"),
-    officialThreadsLink: document.querySelector(".public-link-threads"),
+    officialLinksActions: document.querySelector(".public-link-actions"),
     starMainButton: document.querySelector(".star-button-primary"),
-    starMainProductLink: document.querySelector(".star-product-frame")
+    starMainProductLink: document.querySelector(".star-product-frame"),
+    starBillboardCarousel: document.querySelector("#starBillboardCarousel"),
+    starBillboardControls: document.querySelector("#starBillboardControls"),
+    starBillboardDots: document.querySelector("#starBillboardDots"),
+    starBillboardPrev: document.querySelector("#starBillboardPrev"),
+    starBillboardNext: document.querySelector("#starBillboardNext")
   };
 
   const state = {
@@ -76,7 +84,8 @@
     category: "全部",
     sort: "updated-desc",
     carouselIndex: 0,
-    manualPageIndex: 0
+    manualPageIndex: 0,
+    starBillboardIndex: 0
   };
 
   const legalVersion = config.legalVersion || "2026-06-27";
@@ -90,6 +99,7 @@
   const isLocalPreview = window.location.protocol === "file:" || localHosts.has(window.location.hostname);
   let pendingDownload = null;
   let carouselTimer = null;
+  let starBillboardTimer = null;
   let activePreviewObjectUrl = null;
 
   const escapeHtml = (value = "") => String(value)
@@ -172,81 +182,395 @@
   const canInlinePreview = (item) => isPdf(item) || isImage(item) || isHtml(item) || isText(item);
   const getPdfViewerUrl = (item) => `viewer.html?file=${encodeURIComponent(item.file || "")}&title=${encodeURIComponent(item.title || tr("PDF 預覽", "PDF Preview"))}`;
 
-  const DEFAULT_OFFICIAL_LINKS = Object.freeze({
-    eyebrow: "Featured Links",
-    title: "SMC 組合02副圖｜RVOL 與 OI｜作者 Threads",
-    main: {
-      enabled: true,
-      kicker: "TradingView 主圖",
-      title: "SR＋SMC＋VWAP 多空雙向教練 v6.6.9",
-      url: "https://tw.tradingview.com/script/v9sZVYZ9/"
-    },
-    rvol: {
-      enabled: true,
-      kicker: "SMC 組合02副圖",
-      title: "RVOL + Open Interest 副圖教練 v2",
-      url: "https://tw.tradingview.com/script/s1XifCPs/"
-    },
-    threads: {
-      enabled: true,
-      kicker: "作者 Threads",
-      title: "Threads（@hongshihong19）",
-      url: "https://www.threads.com/@hongshihong19"
-    }
+  const DEFAULT_MODERN_HERO = Object.freeze({
+    eyebrow: "Modern Corporate Training Manual",
+    title: "SR+SMC+VWAP 多空雙向教練 v7.0.0",
+    lead: "Support Resistance + SMC Coach + VWAP｜集中放置 PDF、Pine Script、ZIP 與教學教材，讓版本更新、下載與查找更清楚。",
+    pills: ["最新版本 v7.0.0", "企業培訓手冊風", "支援 PDF 線上預覽", "GitHub Pages 靜態部署"],
+    actions: [
+      { label: "立即瀏覽手冊", url: "#manuals", style: "primary" },
+      { label: "瀏覽文章與公告", url: "articles.html", style: "secondary" },
+      { label: "使用與風險聲明", url: "legal.html", style: "ghost" }
+    ],
+    carouselEyebrow: "Featured Slides",
+    carouselTitle: "精選手冊投影輪播",
+    slides: [
+      { id: "manual-slide-01", enabled: true, image: "assets/images/slide-01.png", imageAlt: "SR+SMC+VWAP 多空雙向教練 v7.0.0 封面", page: "01", title: "SR+SMC+VWAP 多空雙向教練 v7.0.0", description: "完整使用教學手冊｜主教練手冊" },
+      { id: "manual-slide-02", enabled: true, image: "assets/images/slide-02.png", imageAlt: "SR + SMC 多空雙向教練實戰 K 棒情境教學手冊", page: "02", title: "實戰 K 棒情境教學手冊", description: "多單／空單核心流程與情境解析" },
+      { id: "manual-slide-03", enabled: true, image: "assets/images/slide-03.png", imageAlt: "Close 歷史線型相似度驗證器教練手冊", page: "03", title: "Close 歷史線型相似度驗證器", description: "Close 路徑比對｜歷史樣本驗證與投影" },
+      { id: "manual-slide-04", enabled: true, image: "assets/images/slide-04.png", imageAlt: "SMC 組合 02 RVOL 加 Open Interest 副圖教練 v2", page: "04", title: "SMC 組合 02｜RVOL + Open Interest", description: "副圖教練 v2｜新手從零到實戰完整使用說明書" }
+    ]
   });
 
-  const normalizeOfficialLinkItem = (item = {}, fallback = {}) => {
-    const rawTitle = String(item.title || fallback.title || "").trim();
-    const migratedTitle = rawTitle === "SR＋SMC＋VWAP 多空雙向教練"
-      ? "SR＋SMC＋VWAP 多空雙向教練 v6.6.9"
-      : rawTitle;
+  const cleanDisplayText = (value = "") => String(value)
+    .replace(/[\u200B-\u200D\u2060\uFEFF]/g, "")
+    .replace(/\u3000/g, " ")
+    .trim();
+  const cleanOptionalTitle = (value = "") => {
+    const cleaned = cleanDisplayText(value);
+    return cleaned && !/^[\s.,，。．・·…⋯\-–—_｜|/\\:：;；'"「」『』（）()【】\[\]]+$/.test(cleaned) ? cleaned : "";
+  };
+  const normalizeModernHeroAction = (item = {}, fallback = {}) => ({
+    label: cleanDisplayText(Object.prototype.hasOwnProperty.call(item, "label") ? item.label : fallback.label).slice(0, 50),
+    url: String(Object.prototype.hasOwnProperty.call(item, "url") ? item.url : fallback.url || "#manuals").trim(),
+    style: ["primary", "secondary", "ghost"].includes(item.style) ? item.style : (fallback.style || "secondary")
+  });
+  const normalizeModernHeroSlide = (item = {}, fallback = {}, index = 0) => ({
+    id: String(item.id || fallback.id || `manual-slide-${index + 1}`).trim().slice(0, 70),
+    enabled: item.enabled !== false,
+    image: String(Object.prototype.hasOwnProperty.call(item, "image") ? item.image : fallback.image || "").trim(),
+    imageAlt: cleanDisplayText(Object.prototype.hasOwnProperty.call(item, "imageAlt") ? item.imageAlt : fallback.imageAlt || item.title || `投影圖片 ${index + 1}`).slice(0, 180),
+    page: cleanDisplayText(Object.prototype.hasOwnProperty.call(item, "page") ? item.page : fallback.page || String(index + 1).padStart(2, "0")).slice(0, 12),
+    title: cleanDisplayText(Object.prototype.hasOwnProperty.call(item, "title") ? item.title : fallback.title || `投影頁 ${index + 1}`).slice(0, 120),
+    description: cleanDisplayText(Object.prototype.hasOwnProperty.call(item, "description") ? item.description : fallback.description || "").slice(0, 220)
+  });
+  const getModernHero = () => {
+    const source = config.modernHero || {};
+    const actions = Array.isArray(source.actions) ? source.actions : DEFAULT_MODERN_HERO.actions;
+    const slides = Array.isArray(source.slides) && source.slides.length ? source.slides : DEFAULT_MODERN_HERO.slides;
     return {
+      eyebrow: cleanDisplayText(source.eyebrow || DEFAULT_MODERN_HERO.eyebrow).slice(0, 60),
+      title: cleanDisplayText(source.title || DEFAULT_MODERN_HERO.title).slice(0, 140),
+      lead: cleanDisplayText(source.lead || DEFAULT_MODERN_HERO.lead).slice(0, 600),
+      pills: (Array.isArray(source.pills) ? source.pills : DEFAULT_MODERN_HERO.pills).map(cleanDisplayText).filter(Boolean).slice(0, 6),
+      actions: actions.map((item, index) => normalizeModernHeroAction(item, DEFAULT_MODERN_HERO.actions[index] || {})).filter(item => item.label && item.url).slice(0, 4),
+      carouselEyebrow: cleanDisplayText(source.carouselEyebrow || DEFAULT_MODERN_HERO.carouselEyebrow).slice(0, 60),
+      carouselTitle: cleanDisplayText(source.carouselTitle || DEFAULT_MODERN_HERO.carouselTitle).slice(0, 100),
+      slides: slides.map((item, index) => normalizeModernHeroSlide(item, DEFAULT_MODERN_HERO.slides[index] || {}, index)).filter(item => item.enabled && item.image).slice(0, 10)
+    };
+  };
+  const renderModernHero = () => {
+    const settings = getModernHero();
+    if (elements.modernHeroEyebrow) elements.modernHeroEyebrow.textContent = settings.eyebrow;
+    if (elements.heroTitle) elements.heroTitle.textContent = settings.title;
+    if (elements.heroLead) elements.heroLead.textContent = settings.lead;
+    if (elements.modernHeroPills) elements.modernHeroPills.innerHTML = settings.pills.map(item => `<span class="meta-pill">${escapeHtml(item)}</span>`).join("");
+    if (elements.modernHeroActions) elements.modernHeroActions.innerHTML = settings.actions.map(item => `<a class="button button-${escapeHtml(item.style)}" href="${escapeHtml(item.url)}">${escapeHtml(item.label)}</a>`).join("");
+    if (elements.modernHeroCarouselEyebrow) elements.modernHeroCarouselEyebrow.textContent = settings.carouselEyebrow;
+    if (elements.modernHeroCarouselTitle) elements.modernHeroCarouselTitle.textContent = settings.carouselTitle;
+    if (elements.heroCarousel) elements.heroCarousel.innerHTML = settings.slides.map((slide, index) => `<article class="hero-slide ${index === 0 ? "is-active" : ""}"><img src="${escapeHtml(slide.image)}" alt="${escapeHtml(slide.imageAlt || slide.title)}"><div class="hero-slide-caption"><strong>${escapeHtml(slide.page || String(index + 1).padStart(2, "0"))}</strong><div><h3>${escapeHtml(slide.title)}</h3>${slide.description ? `<p>${escapeHtml(slide.description)}</p>` : ""}</div></div></article>`).join("");
+    if (elements.heroDotsWrap) elements.heroDotsWrap.innerHTML = settings.slides.map((slide, index) => `<button class="hero-dot ${index === 0 ? "is-active" : ""}" type="button" aria-label="${escapeHtml(tr("切換到第", "Go to slide "))} ${index + 1} ${escapeHtml(tr("張", ""))}"></button>`).join("");
+    elements.heroSlides = Array.from(document.querySelectorAll(".hero-slide"));
+    elements.heroDots = Array.from(document.querySelectorAll(".hero-dot"));
+    state.carouselIndex = 0;
+  };
+
+  const DEFAULT_OFFICIAL_LINK_ITEMS = Object.freeze([
+    {
+      id: "main",
+      role: "main",
+      adminLabel: "明星看板主圖腳本",
+      eyebrow: "MAIN CHART",
+      enabled: true,
+      kicker: "SR＋SMC＋VWAP 多空雙向教練 v7.0.0",
+      title: "",
+      url: "https://tw.tradingview.com/script/v9sZVYZ9/",
+      image: "assets/images/sr-smc-vwap-v7-star-billboard.webp",
+      imageAlt: "SR＋SMC＋VWAP 多空雙向教練 v7.0.0 圖表預覽"
+    },
+    {
+      id: "rvol",
+      role: "rvol",
+      adminLabel: "RVOL 與 OI 副圖",
+      eyebrow: "SMC COMBO 02",
+      enabled: true,
+      kicker: "SMC 組合02｜RVOL + Open Interest 副圖教練 v2",
+      title: "",
+      url: "https://tw.tradingview.com/script/s1XifCPs/",
+      image: "assets/images/slide-04.png",
+      imageAlt: "SMC 組合02 RVOL 與 Open Interest 副圖教練 v2 預覽"
+    },
+    {
+      id: "close-pattern",
+      role: "close",
+      adminLabel: "Close 歷史線型相似度驗證器",
+      eyebrow: "CLOSE PATTERN",
+      enabled: true,
+      kicker: "Close 歷史線型相似度驗證器 v1.2.2",
+      title: "",
+      url: "code/Close_歷史線型相似度驗證器_v1.2.2_Threads@hongshihong19.pine",
+      image: "assets/images/close-pattern-validator-star-billboard.webp",
+      imageAlt: "Close 歷史線型相似度驗證器 v1.2.2 預覽"
+    },
+    {
+      id: "threads",
+      role: "threads",
+      adminLabel: "作者 Threads",
+      eyebrow: "AUTHOR",
+      enabled: true,
+      kicker: "作者 Threads（@hongshihong19）",
+      title: "",
+      url: "https://www.threads.com/@hongshihong19",
+      image: "",
+      imageAlt: "Threads 作者 hongshihong19"
+    }
+  ]);
+
+  const DEFAULT_OFFICIAL_LINKS = Object.freeze({
+    schemaVersion: 3,
+    eyebrow: "Featured Links",
+    title: "SR＋SMC＋VWAP v7.0.0｜SMC 組合02｜Close 歷史線型驗證｜作者 Threads",
+    items: DEFAULT_OFFICIAL_LINK_ITEMS
+  });
+
+  const normalizeOfficialLinkItem = (item = {}, fallback = {}, index = 0) => {
+    const titleSource = Object.prototype.hasOwnProperty.call(item, "title") ? item.title : fallback.title;
+    const rawTitle = cleanOptionalTitle(titleSource || "");
+    const migratedTitle = rawTitle === "SR＋SMC＋VWAP 多空雙向教練" ? "" : rawTitle;
+    return {
+      id: String(item.id || fallback.id || `official-${index + 1}`).trim().slice(0, 70),
+      role: String(item.role || fallback.role || "custom").trim().slice(0, 30),
+      adminLabel: String(item.adminLabel || fallback.adminLabel || migratedTitle || `連結卡片 ${index + 1}`).trim().slice(0, 80),
+      eyebrow: String(item.eyebrow || fallback.eyebrow || "FEATURED LINK").trim().slice(0, 40),
       enabled: item.enabled !== false,
-      kicker: String(item.kicker || fallback.kicker || "").trim().slice(0, 40),
-      title: migratedTitle.slice(0, 100),
-      url: String(item.url || fallback.url || "").trim()
+      kicker: cleanDisplayText(Object.prototype.hasOwnProperty.call(item, "kicker") ? item.kicker : fallback.kicker || "連結卡片").slice(0, 100),
+      title: migratedTitle.slice(0, 120),
+      url: String(item.url || fallback.url || "").trim(),
+      image: String(item.image || fallback.image || "").trim(),
+      imageAlt: String(item.imageAlt || fallback.imageAlt || migratedTitle || "連結圖片").trim().slice(0, 160)
     };
   };
 
   const getOfficialLinks = () => {
     const source = config.officialLinks || {};
+    const rawItems = Array.isArray(source.items)
+      ? source.items
+      : [
+          normalizeOfficialLinkItem(source.main || {}, DEFAULT_OFFICIAL_LINK_ITEMS[0], 0),
+          normalizeOfficialLinkItem(source.rvol || {}, DEFAULT_OFFICIAL_LINK_ITEMS[1], 1),
+          normalizeOfficialLinkItem(DEFAULT_OFFICIAL_LINK_ITEMS[2], DEFAULT_OFFICIAL_LINK_ITEMS[2], 2),
+          normalizeOfficialLinkItem(source.threads || {}, DEFAULT_OFFICIAL_LINK_ITEMS[3], 3)
+        ];
     return {
+      schemaVersion: 3,
       eyebrow: String(source.eyebrow || DEFAULT_OFFICIAL_LINKS.eyebrow).trim().slice(0, 40),
-      title: String(source.title || DEFAULT_OFFICIAL_LINKS.title).trim().slice(0, 100),
-      main: normalizeOfficialLinkItem(source.main, DEFAULT_OFFICIAL_LINKS.main),
-      rvol: normalizeOfficialLinkItem(source.rvol, DEFAULT_OFFICIAL_LINKS.rvol),
-      threads: normalizeOfficialLinkItem(source.threads, DEFAULT_OFFICIAL_LINKS.threads)
+      title: String(source.title || DEFAULT_OFFICIAL_LINKS.title).trim().slice(0, 140),
+      items: rawItems.map((item, index) => normalizeOfficialLinkItem(item, DEFAULT_OFFICIAL_LINK_ITEMS[index] || {}, index)).slice(0, 8)
     };
   };
 
   const isSafePublicLink = (value = "") => {
-    try { return ["https:", "http:"].includes(new URL(value, window.location.href).protocol); }
+    const source = String(value || "").trim();
+    if (!source) return false;
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(source) && !source.startsWith("//")) return true;
+    try { return ["https:", "http:"].includes(new URL(source, document.baseURI || window.location.href).protocol); }
     catch { return false; }
   };
 
-  const applyOfficialLinkCard = (element, item) => {
-    if (!element) return;
-    element.hidden = !item.enabled;
-    if (item.enabled && isSafePublicLink(item.url)) element.href = item.url;
-    const kicker = element.querySelector(".public-link-kicker");
-    const title = element.querySelector("strong");
-    if (kicker) kicker.textContent = item.kicker;
-    if (title) title.textContent = item.title;
+  const isSafePublicImage = (value = "") => {
+    const source = String(value || "").trim();
+    if (!source) return false;
+    if (/^data:image\//i.test(source)) return true;
+    try { return ["https:", "http:"].includes(new URL(source, document.baseURI || window.location.href).protocol); }
+    catch { return false; }
   };
 
   const renderOfficialLinks = () => {
     const settings = getOfficialLinks();
     if (elements.officialLinksEyebrow) elements.officialLinksEyebrow.textContent = settings.eyebrow;
     if (elements.officialLinksTitle) elements.officialLinksTitle.textContent = settings.title;
-    applyOfficialLinkCard(elements.officialMainLink, settings.main);
-    applyOfficialLinkCard(elements.officialRvolLink, settings.rvol);
-    applyOfficialLinkCard(elements.officialThreadsLink, settings.threads);
-    const visibleCount = [settings.main, settings.rvol, settings.threads].filter(item => item.enabled).length;
-    if (elements.officialLinksBar) elements.officialLinksBar.hidden = visibleCount === 0;
-    if (settings.main.enabled && isSafePublicLink(settings.main.url)) {
-      if (elements.starMainButton) elements.starMainButton.href = settings.main.url;
-      if (elements.starMainProductLink) elements.starMainProductLink.href = settings.main.url;
+    const visibleItems = settings.items.filter(item => item.enabled && isSafePublicLink(item.url));
+    if (elements.officialLinksActions) {
+      elements.officialLinksActions.innerHTML = visibleItems.map(item => {
+        const imageMarkup = isSafePublicImage(item.image)
+          ? `<span class="public-link-media"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.imageAlt || item.title)}" loading="lazy"></span>`
+          : `<span class="public-link-media public-link-media-empty" aria-hidden="true">✦</span>`;
+        const roleClass = String(item.role || "custom").replace(/[^a-z0-9_-]+/gi, "-");
+        const titleMarkup = item.title ? `<strong>${escapeHtml(item.title)}</strong>` : "";
+        return `<a class="public-link public-link-${escapeHtml(roleClass)} ${item.title ? "" : "is-title-empty"}" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" data-id="${escapeHtml(item.id)}">${imageMarkup}<span class="public-link-copy"><span class="public-link-kicker">${escapeHtml(item.kicker)}</span>${titleMarkup}</span><span class="public-link-arrow" aria-hidden="true">↗</span></a>`;
+      }).join("");
     }
+    if (elements.officialLinksBar) elements.officialLinksBar.hidden = visibleItems.length === 0;
+    const mainItem = visibleItems.find(item => item.role === "main") || visibleItems[0];
+    if (mainItem && isSafePublicLink(mainItem.url)) {
+      if (elements.starMainButton) elements.starMainButton.href = mainItem.url;
+      if (elements.starMainProductLink) elements.starMainProductLink.href = mainItem.url;
+    }
+  };
+
+  const DEFAULT_STAR_BILLBOARD_PAGES = Object.freeze([
+    {
+      id: "star-main-v700",
+      enabled: true,
+      badgePrimary: "STAR INDICATOR",
+      badgeSecondary: "OPEN-SOURCE",
+      badgeVersion: "v7.0.0",
+      kicker: "SR × SMC × VWAP｜多空雙向教練",
+      title: "步驟 1～8，從結構確認到持倉管理",
+      highlight: "把完整交易流程放進同一張圖表",
+      lead: "整合支撐阻力、SMC、Order Block、FVG、VWAP 與多週期平行通道；v7.0.0 新增步驟 1～8 前進／退回、步驟 8 持倉管理、1H TP1～TP4／SL，以及 15M 預覽 1H 盈虧比。",
+      features: ["步驟 1～8 前進／退回", "1H TP1～TP4／SL 管理", "15M 預覽 1H 盈虧比"],
+      primaryLabel: "在 TradingView 查看 v7.0.0",
+      primaryUrl: "https://tw.tradingview.com/script/v9sZVYZ9/",
+      secondaryLabel: "下載 v7.0.0 Pine 原始碼",
+      secondaryUrl: "code/SR_SMC_VWAP_v7.0.0_Threads@hongshihong19.pine",
+      authorNote: "作者／著作權人：Threads（@hongshihong19）",
+      image: "assets/images/sr-smc-vwap-v7-star-billboard.webp",
+      imageAlt: "SR+SMC+VWAP 多空雙向教練 v7.0.0 TradingView 圖表畫面",
+      ribbon: "FEATURED SCRIPT",
+      captionKicker: "SR＋SMC＋VWAP",
+      captionTitle: "多空雙向教練 v7.0.0"
+    },
+    {
+      id: "star-close-pattern-v122",
+      enabled: true,
+      badgePrimary: "PATTERN VALIDATOR",
+      badgeSecondary: "CLOSE ONLY",
+      badgeVersion: "v1.2.2",
+      kicker: "Close 歷史線型相似度驗證器",
+      title: "把目前 Close 線型",
+      highlight: "交給歷史樣本驗證",
+      lead: "固定以已收盤 close[1] 為正式終點，搜尋最多 5000 根歷史資料；比較前三名彼此不重疊的相似樣本，疊合目前線型，並把歷史樣本後續 100 根 Close 路徑投影到右側。",
+      features: ["只比較 Close 收盤價", "前三名獨立歷史樣本", "後續 100 根路徑投影"],
+      primaryLabel: "下載 Close 驗證器 Pine",
+      primaryUrl: "code/Close_歷史線型相似度驗證器_v1.2.2_Threads@hongshihong19.pine",
+      secondaryLabel: "前往教練手冊下載中心",
+      secondaryUrl: "#manuals",
+      authorNote: "作者／著作權人：Threads（@hongshihong19）",
+      image: "assets/images/close-pattern-validator-star-billboard.webp",
+      imageAlt: "Close 歷史線型相似度驗證器與教練手冊整合預覽",
+      ribbon: "HISTORICAL MATCH",
+      captionKicker: "Close Pattern Matching",
+      captionTitle: "歷史線型相似度驗證器 v1.2.2"
+    }
+  ]);
+
+  const normalizeStarBillboardPage = (page = {}, index = 0) => {
+    const fallback = DEFAULT_STAR_BILLBOARD_PAGES[0];
+    const rawFeatures = Array.isArray(page.features)
+      ? page.features
+      : [page.feature1, page.feature2, page.feature3];
+    return {
+      id: String(page.id || `star-page-${index + 1}`),
+      enabled: page.enabled !== false,
+      badgePrimary: String(page.badgePrimary || fallback.badgePrimary).trim().slice(0, 32),
+      badgeSecondary: String(page.badgeSecondary || fallback.badgeSecondary).trim().slice(0, 32),
+      badgeVersion: String(page.badgeVersion || fallback.badgeVersion).trim().slice(0, 24),
+      kicker: String(page.kicker || fallback.kicker).trim().slice(0, 90),
+      title: String(page.title || fallback.title).trim().slice(0, 120),
+      highlight: String(page.highlight || fallback.highlight).trim().slice(0, 120),
+      lead: String(page.lead || fallback.lead).trim().slice(0, 520),
+      features: rawFeatures.map(value => String(value || "").trim().slice(0, 80)).filter(Boolean).slice(0, 5),
+      primaryLabel: String(page.primaryLabel || fallback.primaryLabel).trim().slice(0, 50),
+      primaryUrl: String(page.primaryUrl || fallback.primaryUrl).trim(),
+      secondaryLabel: String(page.secondaryLabel || fallback.secondaryLabel).trim().slice(0, 50),
+      secondaryUrl: String(page.secondaryUrl || fallback.secondaryUrl).trim(),
+      authorNote: String(page.authorNote || fallback.authorNote).trim().slice(0, 140),
+      image: String(page.image || fallback.image).trim(),
+      imageAlt: String(page.imageAlt || page.title || fallback.imageAlt).trim().slice(0, 180),
+      ribbon: String(page.ribbon || fallback.ribbon).trim().slice(0, 40),
+      captionKicker: String(page.captionKicker || fallback.captionKicker).trim().slice(0, 50),
+      captionTitle: String(page.captionTitle || page.title || fallback.captionTitle).trim().slice(0, 80)
+    };
+  };
+
+  const getStarBillboards = () => {
+    const source = config.starBillboards || {};
+    const rawPages = Array.isArray(source.pages) && source.pages.length ? source.pages : DEFAULT_STAR_BILLBOARD_PAGES;
+    const pages = rawPages.map(normalizeStarBillboardPage).filter(page => page.enabled).slice(0, 12);
+    return {
+      autoplay: source.autoplay !== false,
+      interval: Math.min(20000, Math.max(3000, Number(source.interval) || 6500)),
+      pages: pages.length ? pages : DEFAULT_STAR_BILLBOARD_PAGES.map(normalizeStarBillboardPage)
+    };
+  };
+
+  const isSafeBillboardHref = (value = "") => {
+    const raw = String(value || "").trim();
+    if (!raw) return false;
+    if (raw.startsWith("#") || raw.startsWith("/") || raw.startsWith("./") || raw.startsWith("../")) return true;
+    try { return ["https:", "http:"].includes(new URL(raw, window.location.href).protocol); }
+    catch { return false; }
+  };
+
+  const safeBillboardHref = (value = "", fallback = "#manuals") => isSafeBillboardHref(value) ? value : fallback;
+  const safeBillboardImage = (value = "") => {
+    const raw = String(value || "").trim();
+    if (!raw || /^javascript:/i.test(raw)) return DEFAULT_STAR_BILLBOARD_PAGES[0].image;
+    return raw;
+  };
+  const multilineHtml = (value = "") => escapeHtml(value).replace(/\r?\n/g, "<br>");
+
+  const createStarBillboardSlide = (page, index) => {
+    const featureMarkup = page.features.map(feature => `<span>${escapeHtml(feature)}</span>`).join("");
+    const primaryExternal = /^https?:/i.test(page.primaryUrl);
+    const secondaryExternal = /^https?:/i.test(page.secondaryUrl);
+    return `
+      <article class="star-billboard-slide" data-star-billboard-slide="${index}" aria-hidden="true">
+        <div class="star-billboard-copy">
+          <div class="star-billboard-badges" aria-label="明星看板特色">
+            ${page.badgePrimary ? `<span class="star-badge star-badge-primary">${escapeHtml(page.badgePrimary)}</span>` : ""}
+            ${page.badgeSecondary ? `<span class="star-badge">${escapeHtml(page.badgeSecondary)}</span>` : ""}
+            ${page.badgeVersion ? `<span class="star-badge">${escapeHtml(page.badgeVersion)}</span>` : ""}
+          </div>
+          <p class="star-billboard-kicker">${escapeHtml(page.kicker)}</p>
+          <h1 id="${index === 0 ? "starBillboardTitle" : `starBillboardTitle-${index}`}">${multilineHtml(page.title)}${page.highlight ? `<br><span>${multilineHtml(page.highlight)}</span>` : ""}</h1>
+          <p class="star-billboard-lead">${escapeHtml(page.lead)}</p>
+          ${featureMarkup ? `<div class="star-billboard-features" aria-label="核心特色">${featureMarkup}</div>` : ""}
+          <div class="star-billboard-actions">
+            <a class="star-button star-button-primary" href="${escapeHtml(safeBillboardHref(page.primaryUrl))}" ${primaryExternal ? 'target="_blank" rel="noopener noreferrer"' : ""}>
+              <span>${escapeHtml(page.primaryLabel)}</span><b aria-hidden="true">↗</b>
+            </a>
+            <a class="star-button star-button-secondary" href="${escapeHtml(safeBillboardHref(page.secondaryUrl))}" ${secondaryExternal ? 'target="_blank" rel="noopener noreferrer"' : ""}>${escapeHtml(page.secondaryLabel)}</a>
+          </div>
+          ${page.authorNote ? `<p class="star-billboard-note">${escapeHtml(page.authorNote)}</p>` : ""}
+        </div>
+        <div class="star-billboard-product" aria-label="${escapeHtml(page.imageAlt)}">
+          <div class="star-product-halo" aria-hidden="true"></div>
+          <a class="star-product-frame" href="${escapeHtml(safeBillboardHref(page.primaryUrl))}" ${primaryExternal ? 'target="_blank" rel="noopener noreferrer"' : ""} aria-label="${escapeHtml(page.primaryLabel)}">
+            ${page.ribbon ? `<div class="star-product-ribbon">${escapeHtml(page.ribbon)}</div>` : ""}
+            <img src="${escapeHtml(safeBillboardImage(page.image))}" alt="${escapeHtml(page.imageAlt)}">
+            <div class="star-product-caption"><span>${escapeHtml(page.captionKicker)}</span><strong>${escapeHtml(page.captionTitle)}</strong></div>
+          </a>
+          <div class="star-product-shadow" aria-hidden="true"></div>
+        </div>
+      </article>`;
+  };
+
+  const stopStarBillboardAutoplay = () => {
+    if (!starBillboardTimer) return;
+    window.clearInterval(starBillboardTimer);
+    starBillboardTimer = null;
+  };
+
+  const updateStarBillboard = (nextIndex, { restart = false } = {}) => {
+    const slides = Array.from(elements.starBillboardCarousel?.querySelectorAll("[data-star-billboard-slide]") || []);
+    const dots = Array.from(elements.starBillboardDots?.querySelectorAll("[data-star-billboard-dot]") || []);
+    if (!slides.length) return;
+    state.starBillboardIndex = (nextIndex + slides.length) % slides.length;
+    slides.forEach((slide, index) => {
+      const active = index === state.starBillboardIndex;
+      slide.classList.toggle("is-active", active);
+      slide.setAttribute("aria-hidden", active ? "false" : "true");
+    });
+    dots.forEach((dot, index) => {
+      const active = index === state.starBillboardIndex;
+      dot.classList.toggle("is-active", active);
+      dot.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    if (restart) startStarBillboardAutoplay();
+  };
+
+  const startStarBillboardAutoplay = () => {
+    stopStarBillboardAutoplay();
+    const settings = getStarBillboards();
+    if (!settings.autoplay || settings.pages.length <= 1 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    starBillboardTimer = window.setInterval(() => updateStarBillboard(state.starBillboardIndex + 1), settings.interval);
+  };
+
+  const initStarBillboards = () => {
+    if (!elements.starBillboardCarousel || !elements.starBillboardDots) return;
+    const settings = getStarBillboards();
+    elements.starBillboardCarousel.innerHTML = settings.pages.map(createStarBillboardSlide).join("");
+    elements.starBillboardDots.innerHTML = settings.pages.map((page, index) => `<button class="star-billboard-dot" type="button" role="tab" data-star-billboard-dot="${index}" aria-label="明星看板第 ${index + 1} 頁" aria-selected="false"></button>`).join("");
+    if (elements.starBillboardControls) elements.starBillboardControls.hidden = settings.pages.length <= 1;
+    updateStarBillboard(0);
+    startStarBillboardAutoplay();
+    const section = elements.starBillboardCarousel.closest(".star-billboard");
+    section?.addEventListener("mouseenter", stopStarBillboardAutoplay);
+    section?.addEventListener("mouseleave", startStarBillboardAutoplay);
+    section?.addEventListener("focusin", stopStarBillboardAutoplay);
+    section?.addEventListener("focusout", startStarBillboardAutoplay);
   };
 
   const DEFAULT_DONATION_LINKS = [
@@ -297,7 +621,7 @@
 
   const isSafeVideoSource = (value = "") => {
     try {
-      const parsed = new URL(value, window.location.href);
+      const parsed = new URL(value, document.baseURI || window.location.href);
       return ["http:", "https:"].includes(parsed.protocol) && /\.(mp4|webm|ogg)(?:$|[?#])/i.test(parsed.pathname + parsed.search + parsed.hash);
     } catch { return false; }
   };
@@ -348,13 +672,12 @@
   };
 
   const setSiteConfig = () => {
-    const name = isEnglish ? (config.siteNameEn || "SR+SMC+VWAP Long/Short Trading Coach v6.6.9") : (config.siteName || "SR+SMC+VWAP 多空雙向教練 v6.6.9");
+    const name = isEnglish ? (config.siteNameEn || "SR+SMC+VWAP Long/Short Trading Coach v7.0.0") : (config.siteName || "SR+SMC+VWAP 多空雙向教練 v7.0.0");
     document.title = name;
     if (elements.siteName) elements.siteName.textContent = name;
     if (elements.footerSiteName) elements.footerSiteName.textContent = name;
     if (elements.siteSubtitle) elements.siteSubtitle.textContent = isEnglish ? (config.subtitleEn || "Pine Script Coaching • Strategy • Execution") : (config.subtitle || "Pine Script Coaching • Strategy • Execution");
-    if (elements.heroTitle) elements.heroTitle.textContent = name;
-    if (elements.heroLead) elements.heroLead.textContent = isEnglish ? (config.heroLeadEn || "A centralized library for PDFs, Pine Script, ZIP packages, and training materials, with clearer versioning, downloads, and search.") : (config.heroLead || "集中整理教材與下載內容。");
+    renderModernHero();
     if (elements.siteNotice) elements.siteNotice.textContent = isEnglish ? (config.noticeEn || "This website is for education and personal research. All content is free and is not investment advice.") : (config.notice || "歡迎使用教練手冊下載中心。");
     if (elements.currentYear) elements.currentYear.textContent = new Date().getFullYear();
     renderOfficialLinks();
@@ -1219,6 +1542,14 @@
     if (detailButton) showDetail(detailButton.dataset.id);
   });
 
+  elements.starBillboardPrev?.addEventListener("click", () => updateStarBillboard(state.starBillboardIndex - 1, { restart: true }));
+  elements.starBillboardNext?.addEventListener("click", () => updateStarBillboard(state.starBillboardIndex + 1, { restart: true }));
+  elements.starBillboardDots?.addEventListener("click", (event) => {
+    const dot = event.target.closest("[data-star-billboard-dot]");
+    if (!dot) return;
+    updateStarBillboard(Number(dot.dataset.starBillboardDot || 0), { restart: true });
+  });
+
   document.addEventListener("click", (event) => {
     const videoButton = event.target.closest(".video-launch-button");
     if (videoButton) {
@@ -1305,6 +1636,7 @@
   });
 
   setSiteConfig();
+  initStarBillboards();
   renderDonationButtons();
   initTheme();
   refreshAll();

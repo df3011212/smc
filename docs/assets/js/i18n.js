@@ -8,7 +8,7 @@
   document.documentElement.lang = language;
   window.SR_SITE_LANGUAGE = language;
   const textMap = {
-  "SR+SMC+VWAP 多空雙向教練 v6.6.9": "SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
+  "SR+SMC+VWAP 多空雙向教練 v7.0.0": "SR+SMC+VWAP Long/Short Trading Coach v7.0.0",
   "STAR INDICATOR": "STAR INDICATOR",
   "OPEN-SOURCE": "OPEN-SOURCE",
   "SR × SMC × VWAP｜多空雙向教練": "SR × SMC × VWAP | Long/Short Trading Coach",
@@ -44,7 +44,7 @@
   "SR＋SMC＋VWAP 多空雙向教練 TradingView 腳本 安裝": "Install the SR + SMC + VWAP Long/Short Trading Coach on TradingView",
   "作者 Threads": "Author on Threads",
   "Support Resistance + SMC Coach + VWAP｜集中放置 PDF、Pine Script、ZIP 與教學教材，讓版本更新、下載與查找更清楚。": "Support Resistance + SMC Coach + VWAP | A centralized library for PDFs, Pine Script, ZIP packages, and training materials, with clearer versioning, downloads, and search.",
-  "最新版本 v6.6.9": "Latest Version v6.6.9",
+  "最新版本 v7.0.0": "Latest Version v7.0.0",
   "企業培訓手冊風": "Corporate Training Manual Style",
   "支援 PDF 線上預覽": "Online PDF Preview",
   "GitHub Pages 靜態部署": "Static Deployment on GitHub Pages",
@@ -233,11 +233,11 @@
   "回到首頁": "Back to Home",
   "首頁": "Home",
   "6. 第三方平台、名稱與商標": "6. Third-Party Platforms, Names, and Trademarks",
-  "使用條款與免責聲明｜SR+SMC+VWAP 多空雙向教練 v6.6.9": "Terms of Use & Disclaimer | SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
-  "隱私政策｜SR+SMC+VWAP 多空雙向教練 v6.6.9": "Privacy Policy | SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
-  "著作權與下架通知｜SR+SMC+VWAP 多空雙向教練 v6.6.9": "Copyright & Takedown Notice | SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
+  "使用條款與免責聲明｜SR+SMC+VWAP 多空雙向教練 v7.0.0": "Terms of Use & Disclaimer | SR+SMC+VWAP Long/Short Trading Coach v7.0.0",
+  "隱私政策｜SR+SMC+VWAP 多空雙向教練 v7.0.0": "Privacy Policy | SR+SMC+VWAP Long/Short Trading Coach v7.0.0",
+  "著作權與下架通知｜SR+SMC+VWAP 多空雙向教練 v7.0.0": "Copyright & Takedown Notice | SR+SMC+VWAP Long/Short Trading Coach v7.0.0",
   "PDF 預覽｜SR+SMC+VWAP 多空雙向教練": "PDF Preview | SR+SMC+VWAP Long/Short Trading Coach",
-  "找不到頁面｜SR+SMC+VWAP 多空雙向教練 v6.6.9": "Page Not Found | SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
+  "找不到頁面｜SR+SMC+VWAP 多空雙向教練 v7.0.0": "Page Not Found | SR+SMC+VWAP Long/Short Trading Coach v7.0.0",
   "打賞／贊助": "Support / Donate",
   "4. 瀏覽人次與下載次數計數工具": "4. Visitor and Download Counters",
   "本網站頁尾使用第三方 Visitor Badge 計數服務顯示累積頁面瀏覽人次，並使用 CounterAPI 記錄「免費下載」按鈕的累積點擊次數。載入或更新計數時，使用者的瀏覽器會直接向第三方服務提出請求，因此該服務可能依其系統運作處理 IP 位址、請求時間、瀏覽器或裝置等基本技術資訊。": "The site footer uses a third-party Visitor Badge service to display cumulative page views and CounterAPI to record clicks on free-download buttons. When counters load or update, the browser sends requests directly to those services, which may process basic technical information such as IP address, request time, browser, or device data.",
@@ -247,11 +247,11 @@
   "回到首頁": "Back to Home",
   "首頁": "Home",
   "6. 第三方平台、名稱與商標": "6. Third-Party Platforms, Names, and Trademarks",
-  "使用條款與免責聲明｜SR+SMC+VWAP 多空雙向教練 v6.6.9": "Terms of Use & Disclaimer | SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
-  "隱私政策｜SR+SMC+VWAP 多空雙向教練 v6.6.9": "Privacy Policy | SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
-  "著作權與下架通知｜SR+SMC+VWAP 多空雙向教練 v6.6.9": "Copyright & Takedown Notice | SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
+  "使用條款與免責聲明｜SR+SMC+VWAP 多空雙向教練 v7.0.0": "Terms of Use & Disclaimer | SR+SMC+VWAP Long/Short Trading Coach v7.0.0",
+  "隱私政策｜SR+SMC+VWAP 多空雙向教練 v7.0.0": "Privacy Policy | SR+SMC+VWAP Long/Short Trading Coach v7.0.0",
+  "著作權與下架通知｜SR+SMC+VWAP 多空雙向教練 v7.0.0": "Copyright & Takedown Notice | SR+SMC+VWAP Long/Short Trading Coach v7.0.0",
   "PDF 預覽｜SR+SMC+VWAP 多空雙向教練": "PDF Preview | SR+SMC+VWAP Long/Short Trading Coach",
-  "找不到頁面｜SR+SMC+VWAP 多空雙向教練 v6.6.9": "Page Not Found | SR+SMC+VWAP Long/Short Trading Coach v6.6.9",
+  "找不到頁面｜SR+SMC+VWAP 多空雙向教練 v7.0.0": "Page Not Found | SR+SMC+VWAP Long/Short Trading Coach v7.0.0",
   "網站操作": "Website Actions",
   "搜尋文章標題、摘要或分類...": "Search article titles, summaries, or categories...",
   "文章分類篩選": "Article category filters",
@@ -288,9 +288,9 @@
   const translateTree = () => {
     if (!isEnglish) return;
     const rawTitle = document.title.trim();
-    document.title = textMap[rawTitle] || rawTitle.replaceAll("SR+SMC+VWAP 多空雙向教練 v6.6.9", "SR+SMC+VWAP Long/Short Trading Coach v6.6.9").replaceAll("多空雙向教練", "Long/Short Trading Coach");
+    document.title = textMap[rawTitle] || rawTitle.replaceAll("SR+SMC+VWAP 多空雙向教練 v7.0.0", "SR+SMC+VWAP Long/Short Trading Coach v7.0.0").replaceAll("多空雙向教練", "Long/Short Trading Coach");
     const description = document.querySelector('meta[name="description"]');
-    if (description) description.content = "SR+SMC+VWAP Long/Short Trading Coach v6.6.9 manual library, Pine Script learning resources, previews, and free downloads.";
+    if (description) description.content = "SR+SMC+VWAP Long/Short Trading Coach v7.0.0 manual library, Pine Script learning resources, previews, and free downloads.";
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
         const tag = node.parentElement?.tagName;

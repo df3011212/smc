@@ -4189,3 +4189,174 @@ code {
     padding-left: 12px;
   }
 }
+
+
+/* ===== v8.1.42｜多頁明星看板輪播 ===== */
+.star-billboard {
+  display: block;
+}
+.star-billboard-carousel {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+.star-billboard-slide {
+  display: none;
+  grid-template-columns: minmax(0, 0.92fr) minmax(420px, 1.08fr);
+  align-items: center;
+  gap: clamp(28px, 5vw, 72px);
+  min-height: 500px;
+}
+.star-billboard-slide.is-active {
+  display: grid;
+  animation: starBillboardPageIn .72s cubic-bezier(.2,.85,.22,1) both;
+}
+.star-billboard-controls {
+  position: relative;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+.star-billboard-controls[hidden] { display: none; }
+.star-billboard-nav {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 218, 128, .28);
+  border-radius: 50%;
+  color: #ffe6a2;
+  background: rgba(255,255,255,.065);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 10px 22px rgba(0,0,0,.16);
+  cursor: pointer;
+  font-size: 1.18rem;
+  font-weight: 900;
+}
+.star-billboard-nav:hover {
+  border-color: rgba(255, 218, 128, .62);
+  background: rgba(255, 218, 128, .12);
+  transform: translateY(-1px);
+}
+.star-billboard-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 8px;
+}
+.star-billboard-dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,.28);
+  cursor: pointer;
+  transition: width .22s ease, background .22s ease, box-shadow .22s ease;
+}
+.star-billboard-dot.is-active {
+  width: 30px;
+  background: linear-gradient(90deg, #f4c65d, #fff0b1);
+  box-shadow: 0 0 18px rgba(244,198,93,.34);
+}
+@keyframes starBillboardPageIn {
+  0% { opacity: 0; transform: translateX(34px) scale(.985); filter: blur(4px); }
+  100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+}
+@media (max-width: 1120px) {
+  .star-billboard-slide {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+}
+@media (max-width: 780px) {
+  .star-billboard-slide {
+    gap: 20px;
+  }
+  .star-billboard-controls {
+    margin-top: 14px;
+  }
+  .star-billboard-nav {
+    width: 40px;
+    height: 40px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .star-billboard-slide.is-active { animation: none; }
+  .star-billboard-nav,
+  .star-billboard-dot { transition: none; }
+}
+
+/* ===== v8.1.47｜明星看板連結卡片圖片與動態數量 ===== */
+.star-billboard > .public-link-bar .public-link-actions {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.star-billboard > .public-link-bar .public-link {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 112px;
+  padding: 14px 18px;
+  border-left: 1px solid rgba(221, 181, 90, .18);
+}
+.public-link-media {
+  width: 78px;
+  height: 68px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.07);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.public-link-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .35s ease;
+}
+.public-link:hover .public-link-media img {
+  transform: scale(1.06);
+}
+.public-link-media-empty {
+  color: #e2ad48;
+  font-size: 1.45rem;
+  text-shadow: 0 0 14px rgba(228,174,70,.42);
+}
+.public-link-copy {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+.public-link-copy strong {
+  overflow-wrap: anywhere;
+}
+.public-link-close { border-color: rgba(194, 95, 218, .28); }
+.public-link-close:hover { border-color: rgba(226, 153, 242, .58); }
+@media (max-width: 1180px) {
+  .star-billboard > .public-link-bar .public-link-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 680px) {
+  .star-billboard > .public-link-bar .public-link-actions {
+    grid-template-columns: 1fr;
+  }
+  .star-billboard > .public-link-bar .public-link {
+    grid-template-columns: 68px minmax(0, 1fr) auto;
+    min-height: 94px;
+    padding: 12px 14px;
+  }
+  .public-link-media {
+    width: 68px;
+    height: 58px;
+  }
+}
+
+
+/* ===== v8.1.48｜空白卡片標題與白色主視覺動態設定 ===== */
+.public-link.is-title-empty .public-link-kicker{font-size:clamp(.95rem,1.15vw,1.12rem);line-height:1.32;letter-spacing:0;color:#f5f7fb;font-weight:900;text-transform:none}.public-link.is-title-empty .public-link-copy{justify-content:center}.public-link-copy{min-width:0}.public-link-kicker,.public-link strong{overflow-wrap:anywhere}
