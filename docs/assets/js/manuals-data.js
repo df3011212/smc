@@ -1,11 +1,11 @@
-/* 由 admin.html 產生，更新日期：2026/7/1 上午8:19:47 */
+/* 由 admin.html 產生，更新日期：2026/7/2 下午12:52:26 */
 window.SITE_CONFIG = {
   "siteName": "SR+SMC+VWAP 多空雙向教練 v7.0.0",
   "subtitle": "Pine Script Coaching • Strategy • Execution",
   "heroLead": "Support Resistance + SMC Coach + VWAP｜集中放置 PDF、Pine Script、ZIP 與教學教材，讓版本更新、下載與查找更清楚。",
   "notice": "本網站供教學與個人研究使用；所有內容免費，不構成投資建議、代操服務或獲利保證。",
   "legalVersion": "2026-06-27",
-  "homeUpdatedAt": "2026-07-01T00:19:47.188Z",
+  "homeUpdatedAt": "2026-07-02T04:52:26.387Z",
   "homeUpdatedAtAuto": true,
   "owner": "Threads（@hongshihong19）",
   "siteNameEn": "SR+SMC+VWAP Long/Short Trading Coach v7.0.0",
@@ -53,7 +53,7 @@ window.SITE_CONFIG = {
     }
   ],
   "subscriptionProgress": {
-    "current": 6,
+    "current": 7,
     "target": 300
   },
   "downloadCounter": {
@@ -301,7 +301,7 @@ window.MANUALS = [
     "updated": "2026-07-01",
     "size": "3.8 MB",
     "tags": [
-      "SR+SMC+VWAP",
+      "Close 歷史線型相似度驗證器",
       "TradingView V6 Pine",
       "多空雙向教練"
     ],
